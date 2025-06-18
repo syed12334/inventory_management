@@ -1,24 +1,18 @@
 <?php
 
 namespace App\Repository;
-
-use App\Models\Categories;
+use App\Service\CategoryService;
 use Illuminate\Validation\ValidationException;
-
 class CategoryRepository
 {
-    /**
-     * Create a new class instance.
-     */
-    public $category;
-    public function __construct(Categories $category)
+    protected $category;
+    public function __construct(CategoryService $category)
     {
         $this->category = $category;
     }
     /* To fetch category list */
     public function index() {
         $category = $this->category->where('status','!=',2)->get();
-        return view('Category.index',compact('category')); 
     }
     /* To add category*/
     public function create() {
