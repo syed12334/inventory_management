@@ -298,8 +298,11 @@ $(document).ready(function(){
 	// Select 2
 	if ($('.select').length > 0) {
 		$('.select').select2({
-			minimumResultsForSearch: -1,
-			width: '100%'
+			minimumResultsForSearch:0,
+			 placeholder: 'Select an option',
+      allowClear: true,
+			width: '100%',
+
 		});
 	}
 

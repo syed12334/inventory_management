@@ -4,17 +4,23 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Post;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
+        protected $guard_name = 'web';
+
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
+        'profile_image',
+        'status'
     ];
 
     protected $hidden = [
@@ -28,7 +34,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function post() {
-        return $this->hasMany(Post::class);
-    }
+   
 }

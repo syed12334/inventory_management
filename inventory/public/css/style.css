@@ -4837,6 +4837,12 @@ hr.text-danger {
   padding: 0.625rem 0.85rem;
   border-radius: 4px;
   font-size: 0.8125rem;
+  z-index: 99999999999 !important;
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:22%!important;
 }
 .alert.alert-dismissible {
   padding: 0.625rem 2.25rem 0.625rem 0.85rem;
@@ -8596,6 +8602,7 @@ table .edit-delete-action.data {
   border: 1px solid #E6EAED;
   box-shadow: none;
   color: inherit;
+  padding-bottom:30px
 }
 .card .card-body {
   padding: 1.25rem;
@@ -45956,5 +45963,24 @@ span.flatpickr-weekday {
   position: relative;
   background: #E8E9EA;
 }
+.error {
+    color: red!important;
+     border-color: #dc3545!important;
+    padding-right: calc(1.5em + .75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(.375em + .1875rem) center;
+    background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+}
+.modal-content .content
+{
+  padding:0px!important
+}
+.paginglinks {
+  position:absolute;right:10px;bottom:12px
+}
+#getPaging {
+  position:relative;top:15px;left:15px;width:65px;
+}
 
-/*# sourceMappingURL=style.css.map */
+
