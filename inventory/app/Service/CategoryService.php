@@ -1,18 +1,16 @@
 <?php
 
 namespace App\Service;
-
-use App\Models\Categories;
-
+use App\Repository\CategoryRepository;
 class CategoryService
 {   
     protected $category;
-    public function __construct(Categories $categories)
+    public function __construct(CategoryRepository $categories)
     {
         $this->category = $categories;
     }
+    /* Fetch all categories */
     public function getCategory() {
-        $category =  $this->category->get();
-         
+       return $this->category->index();
     }
 }

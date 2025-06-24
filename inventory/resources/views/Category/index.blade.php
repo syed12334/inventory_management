@@ -2,6 +2,14 @@
     @section('title')
         Category
     @endsection
+	@push('style')
+		<style>
+			#name-error {
+				background-image:none!important;
+				margin-top:3px
+			}
+		</style>
+	@endpush
 @section('content')
    
 				<div class="content">
@@ -89,8 +97,60 @@
 					</div>
 					<!-- /product list -->
 				</div>
-				
+						<div class="modal fade" id="add-category">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<div class="page-title">
+							<h4>Add Category</h4>
+						</div>
+						<button type="button" class="close bg-danger text-white fs-16" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form method="post" id="categorySave">
+						@csrf
+						<div class="modal-body">
+							<div class="mb-3">
+								<label class="form-label">Category<span class="text-danger ms-1">*</span></label>
+								<input type="text" class="form-control" name="name" id="name" placeholder="Category Name" required>
+							</div>
+						
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn me-2 btn-secondary" data-bs-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-primary">Add Category</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 @endsection
 @push('script')
-    <script src="{{ asset('js/newplugin.js') }}"></script>
+    <script>
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			}
+		});
+		$(document).ready(function() {
+		
+
+			  $("#categorySave").validate({
+			rules: {
+				name: {
+					required: true,
+					minlength: 3
+				}
+			},
+			messages: {
+				name: {
+					required: "Please enter a category",
+					minlength: "Your category name must consist of at least 2 characters"
+				}
+			}
+		});
+		});
+		
+	</script>
 @endpush
