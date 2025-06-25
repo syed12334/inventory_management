@@ -2,7 +2,12 @@
     "use strict"
 
     /* basic select2 */
-    $('.select2').select2();
+    $('.select2').select2({
+			minimumResultsForSearch: 0,
+				placeholder: "Select role",
+				width: '100%',
+				allowClear: true
+			});
 
     /* multiple select */
     $('.js-example-basic-multiple').select2();

@@ -297,13 +297,7 @@ $(document).ready(function(){
 
 	// Select 2
 	if ($('.select').length > 0) {
-		$('.select').select2({
-			minimumResultsForSearch:0,
-			 placeholder: 'Select an option',
-      allowClear: true,
-			width: '100%',
-
-		});
+		$('.select').select2();
 	}
 
 	// Counter 
@@ -1121,7 +1115,7 @@ function toggleFullscreen(elem) {
 				$('.select');
 				setTimeout(function () {
 					$('.select').select2({
-						minimumResultsForSearch: -1,
+						minimumResultsForSearch:0,
 						width: '100%'
 					});
 				}, 100);

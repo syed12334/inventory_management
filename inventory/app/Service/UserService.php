@@ -15,7 +15,6 @@ class UserService
     }
     /* Get all users */
     public function getUsers($request) {
-       
         return  $this->userRepository->getUsers($request);
     }
     /* Roles list */
@@ -26,19 +25,59 @@ class UserService
     public function getPermissions() {
         return $this->userRepository->getPermissions();
     }
-    /* Store users */
+    /* User insert input */
     public function storeUsers($request) {
+        $validate =$this->validateUser($request,'create');
+        if ($validate['status'] ==false) {
+             $result = [
+                'status'  => 422,
+                'errors'  => $validate['errors'],
+            ];
+        }else {
+            $response = $this->userData($request,'create');
+            if($response['status'] ==true) {
+                $result = ['status'=>true,'msg'=>$response['msg'],'data'=>$response['data']];
+            }else {
+                $result = ['status'=>false,'msg'=>$response['msg']];
+            }
+        }
+        return response()->json($result);
+    }
+    /* User update input */
+    public function userUpdate($request) {
+        $validate =$this->validateUser($request,'update');
+        if ($validate['status'] ==false) {
+             $result = [
+                'status'  => 422,
+                'errors'  => $validate['errors'],
+            ];
+        }else {
+            $response = $this->userData($request,'update');
+            if($response['status'] ==true) {
+                $result = ['status'=>true,'msg'=>$response['msg'],'data'=>$response['data']];
+            }else {
+                $result = ['status'=>false,'msg'=>$response['msg']];
+            }
+        }
+        return response()->json($result);
+    }
+    /* Validate input */
+    public function validateUser($userRequest,$type) {
          $rules = [
-            'email' => 'required|email|regex:/(.+)@(.+)\.(.+)/i|unique:users,email',
-            'password'=>[
-                'required',
-                'confirmed'
-            ],
             'role' =>'required',
-            'name' =>'required',
-            'phone'=>'required|integer',
+            'name' =>['required','regex:/^[a-zA-Z\s]+$/'],
+            'mobile_number'=>'required|integer',
             'profile_img'=>'required|mimes:jpg,jpeg,png'
         ];
+        if($type =="create") {
+            $rules['email'] = "required|email|regex:/(.+)@(.+)\.(.+)/i|unique:users,email";
+            $rules['password'] = [
+                'required',
+                'confirmed'
+            ];
+        }else {
+            $rules['email'] = "required|email|regex:/(.+)@(.+)\.(.+)/i";
+        }
         $messages = [
             'email.required' =>'Please enter email id',
             'email.email' =>'Please enter valid email',
@@ -49,38 +88,73 @@ class UserService
             'profile_img.required'=>'Please select profile image',
             'profile_img.mimes'=>'Only jpg,jpeg,png are allowed to upload',
             'name.required'=>'Please enter name',
-            'phone.required'=>'Please enter mobile number',
-            'phone.integer'=>'Only numbers are allowed'
+            'name.regex'=>'Only characters are allowed',
+            'mobile_number.required'=>'Please enter mobile number',
+            'mobile_number.integer'=>'Only numbers are allowed'
         ];
-        $validator = Validator::make($request, $rules,$messages);
+        $validator = Validator::make($userRequest, $rules,$messages);
         if ($validator->fails()) {
-             $result = [
-                'status'  => 422,
+            $result = [
+                'status'  => false,
                 'errors'  => $validator->errors(),
             ];
-        }else {
-            $data['name'] = $request['name'];
-            $data['email'] = $request['email'];
-            $data['password'] = Hash::make($request['password']);
-            $file = $request['profile_img'];
-            if(!empty($file) &&  $file !="") {
-                 $filename = time() . '.' . $file->getClientOriginalExtension();
-                 $filePath = "userprofile/".$filename;
-                 $file->move(public_path('userprofile'), $filename);
-                 $data['profile_image'] = $filePath;
-            }
-            $userList = $this->userRepository->userInsert($data);
-            $userList->assignRole($request['role']);
-            $userLogs['user_id'] = $userList->id;
-            $userLogs['type'] = 1;
-             $this->userRepository->userLogInsert($userLogs);
+        }  
+        else {
             $result = [
                 'status'  => true,
-                'msg'  => 'User created successfully',
-                'data' =>$userList
             ];
         }
-        return response()->json($result);
+        return $result;
+    }
+    /* user store data */
+    public function userData($userInput,$type) {
+        $data['name'] = $userInput['name'];
+        $data['email'] = $userInput['email'];
+        $data['mobile_number'] = $userInput['mobile_number'];
+        $data['password'] = Hash::make($userInput['password']);
+        $file = $userInput['profile_img'];
+        if(!empty($file) &&  $file !="") {
+            $filepath = $this->storeUserImage($file);
+            $data['profile_image'] = $filepath;
+        }
+        if($type =="create") {
+            $userList = $this->userRepository->userInsert($data);
+            if($userList) {
+                $userList->assignRole($userInput['role']);
+                $userLogs['user_id'] = $userList->id;
+                $userLogs['type'] = 1;
+                $this->userRepository->userLogInsert($userLogs);
+                $result = [
+                    'status'  => true,
+                    'msg'  => 'User created successfully',
+                    'data' =>$userList
+                ];
+            }else {
+                $result = [
+                    'status'  => false,
+                    'msg'  => 'Unable to create user',
+                ];
+            }
+        }else {
+              $user_id = $userInput['user_id'];
+              $userList = $this->userRepository->updateUser($user_id,$data);
+                $userLogs['user_id'] = $user_id;
+                $userLogs['type'] = 2;
+                $this->userRepository->userLogInsert($userLogs);
+              if($userList) {
+                 $result = [
+                    'status'  => true,
+                    'msg'  => 'User updated successfully',
+                    'data' =>$userList
+                ];
+              }else {
+                 $result = [
+                    'status'  => false,
+                    'msg'  => 'Unable to create user',
+                ];
+              }
+        }
+        return $result;
     }
     /* Delete single user */
     public function delete($user) {
@@ -89,5 +163,16 @@ class UserService
     /* Delete multiple list */
     public function deleteMultiple($userRequest) {
         return $this->userRepository->deleteMultipleusers($userRequest);
+    }
+    /* get user by id */
+    public function getuserbyid($user_id) {
+        return $this->userRepository->getUserById($user_id);
+    }
+    /* Store user image */
+    public function storeUserImage($file) {
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $filePath = "userprofile/".$filename;
+        $file->move(public_path('userprofile'), $filename);
+        return $filePath;
     }
 }

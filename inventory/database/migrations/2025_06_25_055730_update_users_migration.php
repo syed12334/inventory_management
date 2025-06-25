@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('subcategory_logs', function (Blueprint $table) {
-            $table->integer('from_status')->after('user_id')->comment('1-Active, 0- Inactive, 2- Deleted');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('mobile_number')->nullable()->after('email');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('subcategory_logs', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

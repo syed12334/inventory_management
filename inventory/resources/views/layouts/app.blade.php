@@ -11,7 +11,7 @@
 	<meta name="author" content="Dreams Technologies">
 	<meta name="robots" content="index, follow">
 	<title>Inventory Management @yield('title')</title>
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 	<link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css');}}">
 
@@ -2527,6 +2527,7 @@
 
 	<!-- Select2 JS -->
 	<script src="{{ asset('plugins/select2/js/select2.min.js');}}" type="text/javascript"></script>
+	<script src="{{ asset('js/custom-select2.js');}}" type="text/javascript"></script>
 	<!-- Color Picker JS -->
 	<script src="{{ asset('plugins/%40simonwep/pickr/pickr.es5.min.js');}}" type="text/javascript"></script>
 
