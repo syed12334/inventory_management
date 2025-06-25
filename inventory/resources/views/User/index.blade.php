@@ -38,9 +38,12 @@
 			#deleteMultipleuser {
 				display:none
 			}
+			#tableUsers {
+				cursor:pointer!important
+			}
 		</style>
 	@endpush
-@section('content')
+	@section('content')
 
 				<form id="getSubmit" method="get">
 					<input type="hidden" name="status" value="{{ request('status') }}" id="status" />
@@ -52,7 +55,11 @@
 						<div class="add-item d-flex">
 							<div class="page-title">
 								<h4 class="fw-bold">Users</h4>
-								<h6>Manage your users</h6>
+								<div><a href="{{ url('/') }}">Home</a> 
+									<svg class="breadcrumb-icon" viewBox="0 0 20 20" fill="currentColor" style="margin-top:-1px;width:18px">
+									<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+									</svg> Users
+								</div>
 							</div>
 						</div>
 						@if(session('success'))
@@ -65,24 +72,22 @@
 						@endif
 						<div class="page-btn">
 							<a href="{{ route('roles') }}" class="btn btn-secondary"><i class="ti ti-circle-plus me-1"></i> Manage Roles</a>
-							<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-user"><i class="ti ti-circle-plus me-1"></i>Add User</a>
+							<a href="#" class="btn btn-primary" id="addUsers"><i class="ti ti-circle-plus me-1"></i>Add User</a>
 						</div>
 					</div>
-					<!-- /product list -->
 					<div class="card">
-						<form method="post" action="{{ route('multipleDelete'); }}">
+					  <form method="post" action="{{ route('multipleDelete'); }}">
 							@csrf
-							<button class="btn btn-danger" id="deleteMultipleuser" type="button" data-bs-toggle="modal" data-bs-target="#delete-multiple-modal" style="position:absolute;top:17px;left:240px;z-index:99999999999!important"><i class="ti ti-trash"></i></button>
-							<div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+						<button class="btn btn-danger" id="deleteMultipleuser" type="button" data-bs-toggle="modal" data-bs-target="#delete-multiple-modal" style="position:absolute;top:17px;left:240px;z-index:99999999999!important"><i class="ti ti-trash"></i> Delete</button>
+						<div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
 							<div class="search-set">
 								<div class="search-input">
 									<span class="btn-searchset"><i class="ti ti-search fs-14 feather-search"></i></span>
-								<div id="DataTables_Table_0_filter" class="dataTables_filter"><label> <input type="search" class="form-control form-control-sm" placeholder="Search" aria-controls="DataTables_Table_0"></label></div></div>
+								</div>
 							</div>
-							<!-- Role filter -->
-							<div class="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3" style="position:absolute;right:110px">
-								<div class="dropdown">
-									<a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center roletext" data-bs-toggle="dropdown" >
+							<div class="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
+								<div class="dropdown me-2">
+									<a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
 										@if(request('roles') ==0) 
 											{{ "All"}} 
 										@else
@@ -96,7 +101,7 @@
 										@endif
 									</a>
 									<ul class="dropdown-menu  dropdown-menu-end p-3">
-										<li onclick="return getRoles(0,'All')">
+									<li onclick="return getRoles(0,'All')">
 											<a href="javascript:void(0);" class="dropdown-item rounded-1">All</a>
 										</li>
 										 @foreach($roles as $item)
@@ -104,9 +109,6 @@
 										 @endforeach
 									</ul>
 								</div>
-							</div>
-							<!-- Status Filter -->
-							<div class="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
 								<div class="dropdown">
 									<a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
 										@if(request('status') ==1 && request('status') !="")
@@ -133,13 +135,12 @@
 								</div>
 							</div>
 						</div>
-						
-							<div class="card-body p-0">
-								<div class="table-responsive">
-									<table class="table table-bordered">
-										<thead class="thead-light">
-											<tr>
-												<th class="no-sort">
+						<div class="card-body p-0">
+							<div class="table-responsive">
+								<table class="table datatable">
+									<thead class="thead-light">
+										<tr>
+											<th class="no-sort">
 													<label class="checkboxs">
 														<input type="checkbox" id="select-all">
 														<span class="checkmarks"></span>
@@ -150,10 +151,10 @@
 												<th>Role</th>
 												<th>Status</th>
 												<th class="no-sort" style="width:70px!important">Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											@if(count($users) >0) 
+										</tr>
+									</thead>
+									<tbody>
+									@if(count($users) >0) 
 												@foreach ($users as $k =>$user)
 													<tr>
 														<td>
@@ -186,7 +187,7 @@
 																		<i class="ti ti-check" title="Active User"></i>
 																	</a>
 																@endif
-																<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-user" title="Edit User">
+																<a class="me-2 p-2 mb-0" onclick="edit({{ $user->id }})" title="Edit User">
 																	<i class="ti ti-edit" title="Edit User"></i>
 																</a>
 																<a onclick="deleteUser({{ $user->id; }},2,'Are you sure you want to delete user?')"  class="p-2 mb-0" title="Delete User">
@@ -196,16 +197,14 @@
 														</td>
 													</tr>
 												@endforeach
-											@endif							
-										</tbody>
-									</table>
-								</div>
-								<select class="form-select form-select-sm d-none d-lg-block d-xxl-none" id="getPaging"><option value="10" @if(request('paging') ==10) selected @endif>10</option><option value="20" @if(request('paging') ==20) selected @endif>20</option><option value="30" @if(request('paging') ==30) selected @endif>30</option></select>
-								<div class="paginglinks">
-									{{ $users->links(); }}
-								</div>
+											@endif	
+										
+									</tbody>
+								</table>
 							</div>
-							<div class="modal fade" id="delete-multiple-modal">
+						</div>
+						    <!-- Delete multiple Moal -->
+								<div class="modal fade" id="delete-multiple-modal">
 								<div class="modal-dialog modal-dialog-centered">
 									<div class="modal-content">
 										<div class="page-wrapper-new p-0">
@@ -222,9 +221,14 @@
 									</div>
 								</div>
 							</div>
-						</form>
+					  </form>
+					  <select class="form-select form-select-sm d-none d-lg-block d-xxl-none" id="getPaging"><option value="10" @if(request('paging') ==10) selected @endif>10</option><option value="20" @if(request('paging') ==20) selected @endif>20</option><option value="30" @if(request('paging') ==30) selected @endif>30</option></select>
+								<div class="paginglinks">
+									{{ $users->links(); }}
+								</div>
 					</div>
 					<!-- /product list -->
+					
 				</div>
 	<!-- Add user -->
 		<div class="modal fade" id="add-user">
@@ -234,17 +238,17 @@
 						<div class="content">
 							<div class="modal-header">
 								<div class="page-title">
-									<h4>Add User</h4>
+									<h4 id="modalTitle">Add User</h4>
 								</div>
 								<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>
-							<form action="{{ route('storeUser'); }}" method="post" id="usersList">
+							<form action="{{ route('storeUser'); }}" method="post" id="usersList" enctype="multipart/form-data">
 								@csrf
 								<div class="modal-body">
 									<div class="row">
-									
+										<input type="hidden" name="getuserid" id="getuserid" />
 										<div class="col-lg-12">
 											<div class="mb-3">
 												<label class="form-label">Username<span class="text-danger ms-1">*</span></label>
@@ -255,7 +259,7 @@
 										<div class="col-lg-12">
 											<div class="mb-3">
 												<label class="form-label">Role<span class="text-danger ms-1">*</span></label>
-												<select class="select" name="role" id="role" required>
+												<select class="form-control select2" name="role" id="role" required>
 													<option value="">Select role</option>
 													@if(count($roles) >0)
 														@foreach($roles as $k => $val)
@@ -276,8 +280,8 @@
 										<div class="col-lg-12">
 											<div class="mb-3">
 												<label class="form-label">Phone<span class="text-danger ms-1">*</span></label>
-												<input type="tel" class="form-control" name="phone"  maxlength="10" required>
-												<span class="text-danger" id="error_phone"></span>
+												<input type="tel" class="form-control" name="mobile_number"  maxlength="10" required>
+												<span class="text-danger" id="error_mobile_number"></span>
 											</div>
 										</div>
 									
@@ -315,7 +319,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn me-2 btn-secondary" data-bs-dismiss="modal">Cancel</button>
-									<button type="submit" class="btn btn-primary">Add User</button>
+									<button type="submit" id="userSubmitBtn" class="btn btn-primary">Add User</button>
 								</div>
 							</form>
 						</div>
@@ -323,6 +327,8 @@
 				</div>
 			</div>
 		</div>
+
+		
 		<!-- delete modal -->
 		<div class="modal fade" id="delete-modal">
 			<div class="modal-dialog modal-dialog-centered">
@@ -350,6 +356,7 @@
 @endsection
 @push('script')
     <script>
+		 var dr = $('.dropify').dropify().data('dropify');
 		/* Toast notification*/
 		  toastr.options = {
 			"closeButton": true,
@@ -364,7 +371,7 @@
 			});
 			/* Save data*/
 			$(document).ready(function() {
-				$('.dropify').dropify();
+				
 				$("#usersList").validate({
 				rules: {
 					name: {
@@ -435,7 +442,7 @@
 								$('#usersList')[0].reset();
 								setTimeout(function() {
 									location.reload();
-								},2000);
+								},4000);
 							}else if(res.status ==422) {
 								$.each(res.errors, function (key, val) {
 									$('#error_' + key).text(val[0]);
@@ -511,5 +518,58 @@
            $("#deleteMultipleuser").hide();
         }
     });
+	/* sort table */
+	
+	/* sort col*/
+	$('.sort-col').click(function(){
+		$(this).toggleClass('desc-order');
+	});
+	/* edit col */
+	function edit(user_id) {
+		$.ajax({
+			url:"{{ route('editUser'); }}",
+			method:"post",
+			cache:false,
+			dataType:"json",
+			data: {
+				user_id :user_id
+			},
+			success:function(response) {
+				if(response.status ==true) {
+					$("#name").val(response.data[0].name);
+					$("#role").val(response.data[0].roles[0].name);
+					$("#email").val(response.data[0].email);
+					$("#phone").val(response.data[0].mobile_number);
+					$("#modalTitle").text('Edit User');
+					$("#add-user").modal('show');
+					$("#userSubmitBtn").text('Edit User');
+					var fileName ="http://localhost:8000/"+response.data[0].profile_image;
+					 dr.resetPreview(); 
+					 dr.clearElement();
+					dr.settings.defaultFile = fileName;
+					dr.destroy(); 
+					dr.init();
+					$(".dropify").attr('data-default-file',fileName);
+					$("#usersList").attr("action", "{{ route('updateUser') }}");
+				}else {
+					$("#add-user").modal('hide');
+				}
+			}
+		});
+	}
+	/* Reset form element on modal*/
+	$(document).on("click","#addUsers",function() {
+		$("#modalTitle").text('Add User');
+		$("#userSubmitBtn").text('Add User');
+		$("#usersList").attr("action", "{{ route('storeUser') }}");
+		$("#usersList")[0].reset();
+		 dr.resetPreview(); 
+					 dr.clearElement();
+					dr.settings.defaultFile = "";
+					dr.destroy(); 
+					dr.init();
+		$("#add-user").modal('show');
+	});
+
 	</script>
 @endpush

@@ -50,6 +50,9 @@ class UserRepository
     public function userInsert($data) {
         return $this->user->create($data);
     }
+    public function updateUser($user_id,$data) {
+        return $this->user->where('id',$user_id)->update($data);
+    }
     public function userLogInsert($data) {
         return $this->userlogs->create($data);
     }
@@ -82,5 +85,8 @@ class UserRepository
                 'msg'       => $statusMessages[0]['msg'],
                 'statuskey' => $statusMessages[0]['statuskey'],
             ];
+    }
+    public function getUserById($user_id) {
+        return $this->user->with('roles')->where('id',$user_id)->get();
     }
 }

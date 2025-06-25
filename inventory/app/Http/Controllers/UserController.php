@@ -29,9 +29,23 @@ class UserController extends Controller
         $userStatusList = $this->userService->deleteMultiple($request->all());
         return back()->with('success', $userStatusList['msg']);
     }
-     /* Edit delete */
+     /* Edit user */
     public function editUser(Request $request) {
-        
+        $user_id = $request->user_id;
+        $userData =  $this->userService->getuserbyid($user_id);
+        if(count($userData) >0) {
+            $result['status'] =true;
+            $result['msg'] ="User data found";
+            $result['data'] =$userData;
+        }else {
+            $result['status'] =false;
+            $result['msg'] ="No data found";
+        }
+        return response()->json($result);
+    }
+    /* Update user */
+    public function update(Request $request) {
+        $this->userService->userUpdate($request->all());
     }
 }
  

@@ -11512,6 +11512,7 @@ table.table-bordered thead tr th p {
 /******* Vendors ******/
 .select2-container {
   min-width: 100% !important;
+  z-index:99999999999999999999999999!important
 }
 .select2-container .select2-selection--single {
   height: 38px;
@@ -45977,10 +45978,14 @@ span.flatpickr-weekday {
   padding:0px!important
 }
 .paginglinks {
-  position:absolute;right:10px;bottom:12px
+  position:absolute;right:10px;bottom:14px
 }
 #getPaging {
   position:relative;top:15px;left:15px;width:65px;
 }
-
-
+.dataTables_length {
+display:none!important;
+}
+.dataTables_paginate  {
+  display:none!important;
+}

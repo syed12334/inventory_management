@@ -16,6 +16,7 @@ Route::controller(UserController::class)->group(function() {
     Route::post('userStatusChange','userStatus')->name('userStatusChange');
     Route::post('multipleDelete','deleteMultiple')->name('multipleDelete');
     Route::post('editUser','editUser')->name('editUser');
+    Route::post('updateUser','update')->name('updateUser');
 });
 /* Category routes */
 Route::controller(CategoryController::class)->group(function() {
