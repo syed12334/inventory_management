@@ -1,17 +1,15 @@
 <?php
-namespace App\Repository;
-use App\Models\User;
-use App\Models\UserLogs;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
+    namespace App\Repository;
+    use App\Models\User;
+    use App\Models\UserLogs;
+    use Spatie\Permission\Models\Role;
+    use Spatie\Permission\Models\Permission;
 class UserRepository
 {
-
-    public $user;
-    public $role;
-    public $permission;
-    public $userlogs;
+    protected $user;
+    protected $role;
+    protected $permission;
+    protected $userlogs;
     public function __construct(User $user,Role $role,Permission $permission,UserLogs $UserLogs)
     {
         $this->user = $user;
@@ -88,5 +86,11 @@ class UserRepository
     }
     public function getUserById($user_id) {
         return $this->user->with('roles')->where('id',$user_id)->get();
+    }
+    public function findById($user_id) {
+         return $this->user->where('id',$user_id)->first();
+    }
+    public function getUserDataListById($user_id) {
+        return $this->user->where('id',$user_id)->get();
     }
 }

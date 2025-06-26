@@ -41,6 +41,7 @@
 			#tableUsers {
 				cursor:pointer!important
 			}
+			
 		</style>
 	@endpush
 	@section('content')
@@ -166,7 +167,11 @@
 														<td>
 															<div class="d-flex align-items-center">
 																<a href="javascript:void(0);" class="avatar avatar-md me-2">
+																	@if(!empty($user->profile_image) && $user->profile_image !="")
 																	<img src="{{ asset($user->profile_image ) }}" alt="product">
+																	@else
+																		<img src="{{ asset('img/dummyuser.png' ) }}" alt="product">
+																	@endif
 																</a>
 																<a href="javascript:void(0);">{{$user->name }}</a>
 															</div>
@@ -248,7 +253,7 @@
 								@csrf
 								<div class="modal-body">
 									<div class="row">
-										<input type="hidden" name="getuserid" id="getuserid" />
+										<input type="hidden" name="user_id" id="getuserid" />
 										<div class="col-lg-12">
 											<div class="mb-3">
 												<label class="form-label">Username<span class="text-danger ms-1">*</span></label>
@@ -259,7 +264,7 @@
 										<div class="col-lg-12">
 											<div class="mb-3">
 												<label class="form-label">Role<span class="text-danger ms-1">*</span></label>
-												<select class="form-control select2" name="role" id="role" required>
+												<select class="form-control" name="role" id="role" required>
 													<option value="">Select role</option>
 													@if(count($roles) >0)
 														@foreach($roles as $k => $val)
@@ -280,14 +285,14 @@
 										<div class="col-lg-12">
 											<div class="mb-3">
 												<label class="form-label">Phone<span class="text-danger ms-1">*</span></label>
-												<input type="tel" class="form-control" name="mobile_number"  maxlength="10" required>
+												<input type="tel" class="form-control" name="mobile_number" id="mobile_number"  maxlength="10" required>
 												<span class="text-danger" id="error_mobile_number"></span>
 											</div>
 										</div>
 									
-										<div class="col-lg-6">
+										<div class="col-lg-6" id="editPasswordField">
 											<div class="mb-3">
-												<label class="form-label">Password<span class="text-danger ms-1">*</span></label>
+												<label class="form-label">Password<span class="text-danger ms-1 removestar">*</span></label>
 												<div class="pass-group">
 													<input type="password" class="pass-input form-control" name="password" id="password" required>
 													<i class="ti ti-eye-off toggle-password"></i>
@@ -295,7 +300,7 @@
 												</div>
 											</div>
 										</div>
-										<div class="col-lg-6">
+										<div class="col-lg-6" id="hidePasswordField">
 											<div class="mb-3">
 												<label class="form-label">Confirm Password<span class="text-danger ms-1">*</span></label>
 												<div class="pass-group">
@@ -306,14 +311,7 @@
 											</div>
 										</div>
 
-										<div class="col-lg-12">
-											<div class="mb-3">
-												<label class="form-label">Profile Image</label>
-												<input type="file" class="dropify" name="profile_img" class="form-control" data-allowed-file-extensions="JPEG jpg png PNG JPG" data-height="200" data-width="100" required>
-												<p class="fs-13 mt-2" style="color:red">(Only JPEG, PNG, JPG are allowed)</p>
-												<span class="text-danger" id="error_profile_img"></span>
-											</div>
-										</div>
+									
 										
 									</div>
 								</div>
@@ -356,7 +354,7 @@
 @endsection
 @push('script')
     <script>
-		 var dr = $('.dropify').dropify().data('dropify');
+		// var dr = $('.dropify').dropify().data('dropify');
 		/* Toast notification*/
 		  toastr.options = {
 			"closeButton": true,
@@ -374,30 +372,8 @@
 				
 				$("#usersList").validate({
 				rules: {
-					name: {
-						required: true,
-						minlength: 3
-					},
-					email: {
-						required: true,
-						email: true
-					},
 					role: {
 						required: true,
-					},
-					password: {
-						required: true,
-					},
-					password_confirmation: {
-						required: true,
-					},
-					phone: {
-						required: true,
-						minlength:10,
-						maxlength:10
-					},
-					profile_img: {
-						required:true
 					}
 				},
 				messages: {
@@ -418,9 +394,6 @@
 					password_confirmation: {
 						required: "Please enter cpassword",
 					},
-					profile_img: {
-						required: "Please select profile image",
-					},
 					phone: {
 						required: "Please enter mobile number",
 						minlength:"Please enter minimum 10 digits",
@@ -436,9 +409,11 @@
 						processData: false,
 						contentType: false,
 						success: function (res) {
+						console.log(res);
 							if(res.status == true) {
 								toastr.success(res.msg);
 								$('#add-user').modal('hide');
+								$('#edit-user').modal('hide');
 								$('#usersList')[0].reset();
 								setTimeout(function() {
 									location.reload();
@@ -456,7 +431,7 @@
 							case 403: msg = "Token error ! Re-try again";break;
 							default : msg = textStatus+" - "+errorThrown;break;
 							} 
-					}
+					 }
 					});
 				}
 			});
@@ -537,19 +512,28 @@
 			success:function(response) {
 				if(response.status ==true) {
 					$("#name").val(response.data[0].name);
+					$("#getuserid").val(user_id);
+					$("#editPasswordField").hide();
+					$("#hidePasswordField").hide();
 					$("#role").val(response.data[0].roles[0].name);
 					$("#email").val(response.data[0].email);
-					$("#phone").val(response.data[0].mobile_number);
+					$("#mobile_number").val(response.data[0].mobile_number);
+					$("#password").removeAttr('required');
 					$("#modalTitle").text('Edit User');
 					$("#add-user").modal('show');
 					$("#userSubmitBtn").text('Edit User');
-					var fileName ="http://localhost:8000/"+response.data[0].profile_image;
-					 dr.resetPreview(); 
-					 dr.clearElement();
-					dr.settings.defaultFile = fileName;
-					dr.destroy(); 
-					dr.init();
-					$(".dropify").attr('data-default-file',fileName);
+					$(".removestar").text('');
+					$("#name").prop('disabled',true);
+					$("#email").prop('disabled',true);
+					$("#mobile_number").prop('disabled',true);
+
+					// var fileName ="http://localhost:8000/"+response.data[0].profile_image;
+					//  dr.resetPreview(); 
+					//  dr.clearElement();
+					// dr.settings.defaultFile = fileName;
+					// dr.destroy(); 
+					// dr.init();
+					// $(".dropify").attr('data-default-file',fileName);
 					$("#usersList").attr("action", "{{ route('updateUser') }}");
 				}else {
 					$("#add-user").modal('hide');
@@ -562,12 +546,20 @@
 		$("#modalTitle").text('Add User');
 		$("#userSubmitBtn").text('Add User');
 		$("#usersList").attr("action", "{{ route('storeUser') }}");
+		$("#password").attr('required','required');
+		$("#editPasswordField").show();
+		$("#hidePasswordField").show();
 		$("#usersList")[0].reset();
-		 dr.resetPreview(); 
-					 dr.clearElement();
-					dr.settings.defaultFile = "";
-					dr.destroy(); 
-					dr.init();
+		$(".removestar").text('*');
+		$("#getuserid").val('');
+		$("#name").prop('disabled',false);
+		$("#email").prop('disabled',false);
+		$("#mobile_number").prop('disabled',false);
+		//  dr.resetPreview(); 
+		// 			 dr.clearElement();
+		// 			dr.settings.defaultFile = "";
+		// 			dr.destroy(); 
+		// 			dr.init();
 		$("#add-user").modal('show');
 	});
 

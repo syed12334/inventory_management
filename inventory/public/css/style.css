@@ -45989,3 +45989,6 @@ display:none!important;
 .dataTables_paginate  {
   display:none!important;
 }
+.modal-content .page-wrapper-new  .content {
+				min-height:auto!important
+}
