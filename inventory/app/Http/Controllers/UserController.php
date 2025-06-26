@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 use App\Service\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+
 class UserController extends Controller
 {
     protected $userService;
@@ -11,7 +13,6 @@ class UserController extends Controller
     /* Fetch all user table */
     public function index(Request $request) {
         $users =  $this->userService->getUsers($request->all());
-        // return $users;exit;
         $roles =  $this->userService->getRoles();
         return view('User/index',compact('users','roles'));
     }

@@ -6,7 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 /* User routes */
