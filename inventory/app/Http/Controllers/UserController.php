@@ -14,6 +14,8 @@ class UserController extends Controller
     public function index(Request $request) {
         $users =  $this->userService->getUsers($request->all());
         $roles =  $this->userService->getRoles();
+
+     
         return view('User/index',compact('users','roles'));
     }
     /* Store users into databse */

@@ -55,7 +55,7 @@ class UserRepository
         return $this->userlogs->create($data);
     }
     public function getRoles() {
-        return $this->role->get();
+        return $this->role->all();
     }
     public function deleteUsers($user) {
        $statusMessages = [
