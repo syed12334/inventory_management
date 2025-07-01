@@ -401,7 +401,7 @@
 					}
 				},
 				submitHandler: function (form) {
-					var formData = new FormData(form);
+					var formData = new FormData(form);	
 					$.ajax({
 						url: form.action,
 						method: form.method,
@@ -535,6 +535,12 @@
 					// dr.init();
 					// $(".dropify").attr('data-default-file',fileName);
 					$("#usersList").attr("action", "{{ route('updateUser') }}");
+
+					// Optionally bind click event to submit the form
+					$("#userSubmitBtn").on("click", function (e) {
+						e.preventDefault(); // prevent default form submission (optional)
+						$("#usersList").submit(); // manually submit the form
+					});
 				}else {
 					$("#add-user").modal('hide');
 				}
