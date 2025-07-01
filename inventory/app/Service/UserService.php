@@ -25,43 +25,64 @@ class UserService
     public function getPermissions() {
         return $this->userRepository->getPermissions();
     }
+
     /* User insert input */
-    public function storeUsers($request) {
-        $validate =$this->validateUser($request,'create');
-        if ($validate['status'] ==false) {
-             $result = [
-                'status'  => 422,
-                'errors'  => $validate['errors'],
-            ];
-        }else {
-            $response = $this->userData($request,'create');
-            if($response['status'] ==true) {
-                $result = ['status'=>true,'msg'=>$response['msg'],'data'=>$response['data']];
-            }else {
-                $result = ['status'=>false,'msg'=>$response['msg']];
-            }
+    public function storeUsers($request)
+    {
+        $validate = $this->validateUser($request, 'create');
+
+        if ($validate['status'] === false) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validate['errors'],
+            ]);
         }
-        return response()->json($result);
+
+        $response = $this->userData($request, 'create');
+
+        if ($response['status'] === true) {
+            return response()->json([
+                'status' => true,
+                'msg'    => $response['msg'],
+                'data'   => $response['data'],
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'msg'    => $response['msg'],
+        ]);
     }
+
     /* User update input */
-    public function userUpdate($request) {
-        $validate =$this->validateUser($request,'update');
-        if ($validate['status'] ==false) {
-             $result = [
-                'status'  => 422,
-                'errors'  => $validate['errors'],
-            ];
-        }else {
-            $response = $this->userData($request,'update');
-            return $response;exit;
-            if($response['status'] ==true) {
-                $result = ['status'=>true,'msg'=>$response['msg'],'data'=>$response['data']];
-            }else {
-                $result = ['status'=>false,'msg'=>$response['msg']];
-            }
+    public function userUpdate($request)
+    {
+        $validate = $this->validateUser($request, 'update');
+
+        if ($validate['status'] === false) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validate['errors'],
+            ]);
         }
-        return response()->json($result);
+
+        $response = $this->userData($request, 'update');
+
+        if ($response['status'] === true) {
+            return response()->json([
+                'status' => true,
+                'msg'    => $response['msg'],
+                'data'   => $response['data'],
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'msg'    => $response['msg'],
+        ]);
     }
+
+
     /* Validate input */
     public function validateUser($userRequest,$type) {
          $rules = [
@@ -78,7 +99,7 @@ class UserService
                 'required',
                 'confirmed'
             ];
-            $rules['name'] = ['required','regex:/^[a-zA-Z\s]+$/','unique:users,name'];
+            $rules['name'] = ['required', 'regex:/^[a-zA-Z0-9\s]+$/', 'unique:users,name'];
             $rules['mobile_number'] = 'required|integer|unique:users,mobile_number';
             $messages['password.required'] = "Please enter password";
             $messages['password.confirmed'] = "Passwords do not match";
@@ -107,12 +128,8 @@ class UserService
         return $result;
     }
     /* user store data */
-    public function userData($userInput,$type) {
-        // $file = $userInput['profile_img'];
-        // if(!empty($file) &&  $file !="") {
-        //     $filepath = $this->storeUserImage($file);
-        //     $data['profile_image'] = $filepath;
-        // }
+   /* public function userData($userInput,$type) {
+
         if($type =="create") {
               $data['name'] = $userInput['name'];
               $data['email'] = $userInput['email'];
@@ -135,6 +152,9 @@ class UserService
                     'msg'  => 'Unable to create user',
                 ];
             }
+
+            return response()->json($resultArr);
+            
         }else if($type=="update") {
               $user_id = $userInput['user_id'];
               $usersLists = $this->userRepository->findById($user_id);
@@ -153,6 +173,93 @@ class UserService
         }
         
     }
+
+    */
+
+    public function userData($userInput, $action = 'create')
+    {
+        if ($action === "create") {
+
+            if (!isset($userInput['name'], $userInput['email'], $userInput['mobile_number'], $userInput['password'], $userInput['role'])) {
+                return [
+                    'status' => false,
+                    'msg'    => 'Missing required fields for user creation.',
+                ];
+            }
+
+            $data = [
+                'name'          => $userInput['name'],
+                'email'         => $userInput['email'],
+                'mobile_number' => $userInput['mobile_number'],
+                'password'      => Hash::make($userInput['password']),
+            ];
+
+            $userList = $this->userRepository->userInsert($data);
+
+            if ($userList) {
+                $userList->assignRole($userInput['role']);
+
+                $userLogs = [
+                    'user_id' => $userList->id,
+                    'type'    => 1,
+                ];
+
+                $this->userRepository->userLogInsert($userLogs);
+
+                return [
+                    'status' => true,
+                    'msg'    => 'User created successfully',
+                    'data'   => $userList,
+                ];
+            }
+
+            return [
+                'status' => false,
+                'msg'    => 'Unable to create user',
+            ];
+        }
+
+        // Update logic
+        if ($action === "update") {
+            if (!isset($userInput['user_id'], $userInput['role'])) {
+                return [
+                    'status' => false,
+                    'msg'    => 'Missing user ID or role for update.',
+                ];
+            }
+
+            $user_id     = $userInput['user_id'];
+            $usersLists  = $this->userRepository->findById($user_id);
+
+            if (!$usersLists) {
+                return [
+                    'status' => false,
+                    'msg'    => 'User not found for update.',
+                ];
+            }
+
+            $usersLists->syncRoles($userInput['role']);
+            
+            $userLogs = [
+                'user_id' => $user_id,
+                'type'    => 2,
+            ];
+
+            $this->userRepository->userLogInsert($userLogs);
+
+            return [
+                'status' => true,
+                'msg'    => 'User updated successfully',
+                'data'   => $usersLists,
+            ];
+        }
+
+        return [
+            'status' => false,
+            'msg'    => 'Invalid action type',
+        ];
+    }
+
     /* Delete single user */
     public function delete($user) {
         return $this->userRepository->deleteUsers($user);

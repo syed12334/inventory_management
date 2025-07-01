@@ -14,6 +14,8 @@ class UserController extends Controller
     public function index(Request $request) {
         $users =  $this->userService->getUsers($request->all());
         $roles =  $this->userService->getRoles();
+
+     
         return view('User/index',compact('users','roles'));
     }
     /* Store users into databse */
@@ -46,7 +48,7 @@ class UserController extends Controller
     }
     /* Update user */
     public function update(Request $request) {
-        $this->userService->userUpdate($request->all());
+       return $this->userService->userUpdate($request->all());
     }
 }
  
