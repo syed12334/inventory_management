@@ -11,13 +11,21 @@ class UserController extends Controller
         $this->userService  = $users;
     }
     /* Fetch all user table */
-    public function index(Request $request) {
-        $users =  $this->userService->getUsers($request->all());
-        $roles =  $this->userService->getRoles();
 
-     
-        return view('User/index',compact('users','roles'));
+    public function index(Request $request)
+    {
+        $users = $this->userService->getUsers($request->all());
+        $roles = $this->userService->getRoles();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('User.partials.table', compact('users', 'roles'))->render()
+            ]);
+        }
+
+        return view('User.index', compact('users', 'roles'));
     }
+
     /* Store users into databse */
     public function store(Request $request) {
         return $this->userService->storeUsers($request->all());
