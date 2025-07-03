@@ -137,75 +137,8 @@
 							</div>
 						</div>
 						<div class="card-body p-0">
-							<div class="table-responsive">
-								<table class="table datatable">
-									<thead class="thead-light">
-										<tr>
-											<th class="no-sort">
-													<label class="checkboxs">
-														<input type="checkbox" id="select-all">
-														<span class="checkmarks"></span>
-													</label>
-												</th>
-												<th>User Name</th>
-												<th>Email</th>
-												<th>Role</th>
-												<th>Status</th>
-												<th class="no-sort" style="width:70px!important">Action</th>
-										</tr>
-									</thead>
-									<tbody>
-									@if(count($users) >0) 
-												@foreach ($users as $k =>$user)
-													<tr>
-														<td>
-															<label class="checkboxs">
-																<input type="checkbox" value="{{ $user->id; }}" name="deleteUser[]" class="getusercheckbox">
-																<span class="checkmarks"></span>
-															</label>
-														</td>
-														<td>
-															<div class="d-flex align-items-center">
-																<a href="javascript:void(0);" class="avatar avatar-md me-2">
-																	@if(!empty($user->profile_image) && $user->profile_image !="")
-																	<img src="{{ asset($user->profile_image ) }}" alt="product">
-																	@else
-																		<img src="{{ asset('img/dummyuser.png' ) }}" alt="product">
-																	@endif
-																</a>
-																<a href="javascript:void(0);">{{$user->name }}</a>
-															</div>
-														</td>
-														<td>{{ $user->email }}</td>
-														<td>@foreach($user->roles as $role)
-																{{ $role->name }}
-															@endforeach</td>
-														<td> @if($user->status ==1) <span class="d-inline-flex align-items-center p-1 pe-2 rounded-1 text-white bg-success fs-10">Active</span> @else <span class="d-inline-flex align-items-center p-1 pe-2 rounded-1 text-white bg-danger fs-10">Inactive</span> @endif</td>
-														<td class="action-table-data">
-															<div class="edit-delete-action">
-																@if($user->status ==1)
-																	<a class="me-2 p-2 mb-0" onclick="deleteUser({{ $user->id; }},0,'Are you sure you want to inactive user?')">
-																			<i class="ti ti-lock-cancel" title="Inactive User"></i>
-																	</a>
-																@else
-																	<a class="me-2 p-2 mb-0" onclick="deleteUser({{ $user->id; }},1,'Are you sure you want to activate user?')">
-																		<i class="ti ti-check" title="Active User"></i>
-																	</a>
-																@endif
-																<a class="me-2 p-2 mb-0" onclick="edit({{ $user->id }})" title="Edit User">
-																	<i class="ti ti-edit" title="Edit User"></i>
-																</a>
-																<a onclick="deleteUser({{ $user->id; }},2,'Are you sure you want to delete user?')"  class="p-2 mb-0" title="Delete User">
-																	<i class="ti ti-trash" title="Delete User"></i>
-																</a>
-															</div>
-														</td>
-													</tr>
-												@endforeach
-											@endif	
-										
-									</tbody>
-								</table>
+							<div class="table-responsive" id = "usersListtable">
+								 @include('User.partials.table', ['users' => $users])
 							</div>
 						</div>
 						    <!-- Delete multiple Moal -->
@@ -410,15 +343,22 @@
 						contentType: false,
 						success: function (res) {
 						console.log(res);
-							if(res.status == true) {
-								toastr.success(res.msg);
-								$('#add-user').modal('hide');
-								$('#edit-user').modal('hide');
-								$('#usersList')[0].reset();
-								setTimeout(function() {
-									location.reload();
-								},4000);
-							}else if(res.status ==422) {
+							if (res.status == true) {
+							toastr.success(res.msg);
+							$('#add-user').modal('hide');
+							$('#edit-user').modal('hide');
+
+							$.ajax({
+								url: '/users',
+								type: 'GET',
+								success: function(res) {
+									$('#usersListtable').html(res.html);
+								},
+								error: function() {
+									toastr.error('Failed to refresh user list.');
+								}
+							});
+						} else if(res.status ==422) {
 								$.each(res.errors, function (key, val) {
 									$('#error_' + key).text(val[0]);
 									$("#"+key).addClass('error');
