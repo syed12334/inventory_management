@@ -10,6 +10,8 @@
 	<meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
 	<meta name="author" content="Dreams Technologies">
 	<meta name="robots" content="index, follow">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
+
 	<title>Inventory Management @yield('title')</title>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 

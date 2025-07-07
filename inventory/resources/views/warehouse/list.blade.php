@@ -44,7 +44,7 @@
 			
 		</style>
 	@endpush
-	@section('content')
+@section('content')
 
 <form id="getSubmit" method="get">
     <input type="hidden" name="status" value="{{ request('status') }}" id="status" />
@@ -77,17 +77,13 @@
         @endif
 
         <div class="page-btn">
-            <a href="{{ route('roles') }}" class="btn btn-secondary">
-                <i class="ti ti-circle-plus me-1"></i> Manage Roles
-            </a>
-            <a href="#" class="btn btn-primary" id="addUsers">
-                <i class="ti ti-circle-plus me-1"></i>Add User
-            </a>
+            <a href="{{ route('roles') }}" class="btn btn-secondary"><i class="ti ti-circle-plus me-1"></i> Manage Roles</a>
+            <a href="#" class="btn btn-primary" id="addUsers"><i class="ti ti-circle-plus me-1"></i>Add User</a>
         </div>
     </div>
 
     <div class="card">
-        <form method="post" action="{{ route('multipleDelete') }}">
+        <form method="post" action="{{ route('warehouse.multipleDelete') }}" id="multipledeleteform">
             @csrf
             <button class="btn btn-danger" id="deleteMultipleuser" type="button" data-bs-toggle="modal" data-bs-target="#delete-multiple-modal" style="position:absolute;top:17px;left:240px;z-index:99999999999!important">
                 <i class="ti ti-trash"></i> Delete
@@ -96,45 +92,18 @@
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
                 <div class="search-set">
                     <div class="search-input">
-                        <span class="btn-searchset">
-                            <i class="ti ti-search fs-14 feather-search"></i>
-                        </span>
+                        <span class="btn-searchset"><i class="ti ti-search fs-14 feather-search"></i></span>
                     </div>
                 </div>
-
                 <div class="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
-                    <!-- Roles Filter -->
-                    <div class="dropdown me-2">
-                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
-                            @if(request('roles') == 0)
-                                All
-                            @else
-                                @foreach($roles as $item)
-                                    @if(request('roles') != "" && $item->id == request('roles'))
-                                        {{ $item->name }}
-                                    @endif
-                                @endforeach
-                            @endif
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-3">
-                            <li onclick="return getRoles(0,'All')">
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">All</a>
-                            </li>
-                            @foreach($roles as $item)
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0)" onclick="return getRoles({{ $item->id }}, '{{ $item->name }}')">{{ $item->name }}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-
-                    <!-- Status Filter -->
                     <div class="dropdown">
                         <a href="javascript:void(0);" class="dropdown-toggle btn btn-white btn-md d-inline-flex align-items-center" data-bs-toggle="dropdown">
-                            @if(request('status') == 1)
+                            @if(request('status') == 1 && request('status') != "")
                                 Active
-                            @elseif(request('status') == 0)
+                            @elseif(request('status') == 0 && request('status') != "")
                                 Inactive
+                            @elseif(request('status') == -1 && request('status') != "")
+                                All
                             @else
                                 All
                             @endif
@@ -156,11 +125,11 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive" id="usersListtable">
-                    @include('User.partials.table', ['users' => $users])
+                    @include('warehouse.partials.table', ['users' => $users])
                 </div>
             </div>
 
-            <!-- Delete Multiple Modal -->
+            <!-- Delete multiple Modal -->
             <div class="modal fade" id="delete-multiple-modal">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -173,7 +142,7 @@
                                 <p class="mb-0 fs-16" id="statusText">Are you sure to delete selected user?</p>
                                 <div class="modal-footer-btn mt-3 d-flex justify-content-center">
                                     <button type="button" class="btn me-2 btn-secondary fs-13 fw-medium p-2 px-3 shadow-none" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary fs-13 fw-medium p-2 px-3">Submit</button>
+                                    <button type="submit" class="btn btn-primary fs-13 fw-medium p-2 px-3" id ="submit_id">Submit</button>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +153,7 @@
     </div>
 </div>
 
-<!-- Add User Modal -->
+<!-- Add user modal -->
 <div class="modal fade" id="add-user">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -198,13 +167,12 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-
-                    <form action="{{ route('storeUser') }}" method="post" id="usersList" enctype="multipart/form-data">
+                    <form action="{{ route('warehouse.storewarehouseuser') }}" method="post" id="usersList" enctype="multipart/form-data">
                         @csrf
+                        <input type="hidden" name="role" value="{{ $roles->name }}">
                         <div class="modal-body">
                             <div class="row">
                                 <input type="hidden" name="user_id" id="getuserid" />
-
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         <label class="form-label">Username<span class="text-danger ms-1">*</span></label>
@@ -215,14 +183,16 @@
 
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        <label class="form-label">Role<span class="text-danger ms-1">*</span></label>
-                                        <select class="form-control" name="role" id="role" required>
-                                            <option value="">Select role</option>
-                                            @foreach($roles as $val)
-                                                <option value="{{ $val->name }}">{{ $val->name }}</option>
-                                            @endforeach
+                                        <label class="form-label">Store <span class="text-danger ms-1">*</span></label>
+                                        <select class="form-control" name="warehouse_store_id" id="role" required>
+                                            <option value="">Select Store</option>
+                                            @if(count($store_users) > 0)
+                                                @foreach($store_users as $val)
+                                                    <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>
-                                        <span class="text-danger" id="error_role"></span>
+                                        <span class="text-danger" id="error_warehouse_store_id"></span>
                                     </div>
                                 </div>
 
@@ -263,9 +233,40 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Bank Details <span class="text-danger ms-1">*</span></label>
+                                        <input type="text" class="form-control" name="bank_detail" id="bank_detail" required>
+                                        <span class="text-danger" id="error_bank_detail"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Address <span class="text-danger ms-1">*</span></label>
+                                        <input type="text" class="form-control" name="billing_address" id="billing_address">
+                                        <span class="text-danger" id="error_billing_address"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3 form-check">
+                                        <input type="hidden" name="show_email_on_invoice" value="0">
+                                        <input type="checkbox" class="form-check-input" name="show_email_on_invoice" id="show_email_on_invoice" value="1">
+                                        <label class="form-check-label" for="show_email_on_invoice">Show Email on Invoice</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3 form-check">
+                                        <input type="hidden" name="show_phone_on_invoice" value="0">
+                                        <input type="checkbox" class="form-check-input" name="show_phone_on_invoice" id="show_phone_on_invoice" value="1">
+                                        <label class="form-check-label" for="show_phone_on_invoice">Show Phone on Invoice</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn me-2 btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" id="userSubmitBtn" class="btn btn-primary">Add User</button>
@@ -307,7 +308,8 @@
 
 @push('script')
     <script>
-			$.ajaxSetup({
+
+		$.ajaxSetup({
 				headers: {
 					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 				}
@@ -320,11 +322,7 @@
 			"timeOut": "4000",           
 			"extendedTimeOut": "4000"
 			};
-			$.ajaxSetup({
-				headers: {
-					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-				}
-			});
+			
 			/* Save data*/
 			$(document).ready(function() {
 				
@@ -338,6 +336,9 @@
 					name: {
 						required: "Please enter a username",
 						minlength: "Your category name must consist of at least 2 characters"
+					},
+					role: {
+						required: "Please select role",
 					},
 					email: {
 						required: "Please enter email",
@@ -357,7 +358,6 @@
 				},
 				submitHandler: function (form) {
 					var formData = new FormData(form);
-				
 					$.ajax({
 						url: form.action,
 						method: form.method,
@@ -372,7 +372,7 @@
 							$('#edit-user').modal('hide');
 
 							$.ajax({
-								url: '/users',
+								url: "{{ route('warehouse.index') }}",
 								type: 'GET',
 								success: function(res) {
 									$('#usersListtable').html(res.html);
@@ -396,7 +396,6 @@
 							} 
 					 }
 					});
-
 				}
 			});
 		});
@@ -433,14 +432,24 @@
 				$("#statusTitle").text('Delete User');
 			}
 		}
+
 		/* Select user checkbox*/
 		$('.getusercheckbox').on('click', function () {
           if ($('.getusercheckbox:checked').length > 0) {
               $("#deleteMultipleuser").show();
+			  let selectedIds = [];
+
+			$('.getusercheckbox:checked').each(function () {
+				selectedIds.push($(this).val());
+			});
+
           } else {
               $("#deleteMultipleuser").hide();
           }
         });
+
+		
+
 		/* Select roles*/
 		 function getRoles(rid,rname) {
            $("#roles").val(rid);
@@ -466,56 +475,79 @@
 	/* edit col */
 	function edit(user_id) {
 		$.ajax({
-			url:"{{ route('editUser') }}",
+			url:"{{ route('warehouse.editUser') }}",
 			method:"post",
 			cache:false,
 			dataType:"json",
 			data: {
 				user_id :user_id
 			},
-			success:function(response) {
-				if(response.status ==true) {
-					$("#name").val(response.data.name);
-					$("#getuserid").val(user_id);
-					$("#editPasswordField").hide();
-					$("#hidePasswordField").hide();
-					$("#role").val(response.data.roles[0].name);
-					$("#email").val(response.data.email);
-					$("#mobile_number").val(response.data.mobile_number);
-					$("#password").removeAttr('required');
-					$("#modalTitle").text('Edit User');
-					$("#add-user").modal('show');
-					$("#userSubmitBtn").text('Edit User');
-					$(".removestar").text('');
-					$("#name").prop('disabled',true);
-					$("#email").prop('disabled',true);
-					$("#mobile_number").prop('disabled',true);
+			success: function(response) {
 
-					// var fileName ="http://localhost:8000/"+response.data[0].profile_image;
-					//  dr.resetPreview(); 
-					//  dr.clearElement();
-					// dr.settings.defaultFile = fileName;
-					// dr.destroy(); 
-					// dr.init();
-					// $(".dropify").attr('data-default-file',fileName);
-					$("#usersList").attr("action", "{{ route('updateUser') }}");
+	    console.log("Full response:", response);        // Logs the entire response object
+    console.log("User data:", response.data);       // Logs the 'data' property from response
 
-					// Optionally bind click event to submit the form
-					$("#userSubmitBtn").on("click", function (e) {
-						e.preventDefault(); // prevent default form submission (optional)
-						$("#usersList").submit(); // manually submit the form
-					});
-				}else {
-					$("#add-user").modal('hide');
+
+					if (response.status === true) {
+						const user = response.data;
+
+						$("#name").val(user.name);
+						$("#getuserid").val(user.id);
+						$("#editPasswordField").hide();
+						$("#hidePasswordField").hide();
+						$("#role").val(user.warehouse_store_id);
+						$("#email").val(user.email);
+						$("#mobile_number").val(user.mobile_number);
+						$("#bank_detail").val(user.bank_detail);
+						$("#billing_address").val(user.billing_address);
+						$("#show_email_on_invoice").prop("checked", user.show_email_on_invoice == 1);
+						$("#show_phone_on_invoice").prop("checked", user.show_phone_on_invoice == 1);
+						
+						
+						$("#password").removeAttr('required');
+
+						$("#modalTitle").text('Edit User');
+						$("#add-user").modal('show');
+						$("#userSubmitBtn").text('Edit User');
+						$(".removestar").text('');
+
+						$("#name, #email, #mobile_number").prop('disabled', true);
+						$("#usersList").attr("action", "{{ route('warehouse.updateWarehouse') }}");
+
+						$("#userSubmitBtn").off("click").on("click", function (e) {
+							e.preventDefault();
+							$("#usersList").submit();
+							$.ajax({
+								url: "{{ route('warehouse.index') }}",
+								type: 'GET',
+								success: function(res) {
+									$('#usersListtable').html(res.html);
+								},
+								error: function() {
+									toastr.error('Failed to refresh user list.');
+								}
+							});
+						});
+					} else {
+						$("#add-user").modal('hide');
+						alert("User not found.");
+					}
 				}
-			}
+
 		});
+
+		
 	}
+
+	$('#submit_id').on('click', function () {
+		e.preventDefault();
+		$("#multipledeleteform").submit();
+	});
 	/* Reset form element on modal*/
 	$(document).on("click","#addUsers",function() {
 		$("#modalTitle").text('Add User');
 		$("#userSubmitBtn").text('Add User');
-		$("#usersList").attr("action", "{{ route('storeUser') }}");
+		$("#usersList").attr("action", "{{ route('warehouse.storewarehouseuser') }}");
 		$("#password").attr('required','required');
 		$("#editPasswordField").show();
 		$("#hidePasswordField").show();

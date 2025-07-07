@@ -67,7 +67,7 @@
                             <a class="me-2 p-2 mb-0" onclick="edit({{ $user->id }})" title="Edit User">
                                 <i class="ti ti-edit"></i>
                             </a>
-                            <a class="p-2 mb-0" onclick="deleteUser({{ $user->id }}, 2, 'Are you sure you want to delete user?')" title="Delete User">
+                            <a onclick="deleteUser({{ $user->id }}, 2, 'Are you sure you want to delete user?')" class="p-2 mb-0" title="Delete User">
                                 <i class="ti ti-trash"></i>
                             </a>
                         </div>
@@ -81,14 +81,7 @@
         @endif
     </tbody>
 </table>
-
-<!-- Pagination Control -->
-<select class="form-select form-select-sm d-none d-lg-block d-xxl-none" id="getPaging">
-    <option value="10" @if(request('paging') == 10) selected @endif>10</option>
-    <option value="20" @if(request('paging') == 20) selected @endif>20</option>
-    <option value="30" @if(request('paging') == 30) selected @endif>30</option>
-</select>
-
-<div class="paginglinks">
-    {!! $users->links() !!}
-</div>
+<select class="form-select form-select-sm d-none d-lg-block d-xxl-none" id="getPaging"><option value="10" @if(request('paging') ==10) selected @endif>10</option><option value="20" @if(request('paging') ==20) selected @endif>20</option><option value="30" @if(request('paging') ==30) selected @endif>30</option></select>
+								<div class="paginglinks">
+									{{ $users->links(); }}
+								</div>

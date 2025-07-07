@@ -37,22 +37,28 @@ class UserController extends Controller
     }
     /* Multiple delete */
     public function deleteMultiple(Request $request) {
+   
         $userStatusList = $this->userService->deleteMultiple($request->all());
         return back()->with('success', $userStatusList['msg']);
     }
      /* Edit user */
-    public function editUser(Request $request) {
-        $user_id = $request->user_id;
-        $userData =  $this->userService->getuserbyid($user_id);
-        if(count($userData) >0) {
-            $result['status'] =true;
-            $result['msg'] ="User data found";
-            $result['data'] =$userData;
-        }else {
-            $result['status'] =false;
-            $result['msg'] ="No data found";
+    public function editUser(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $userData = $this->userService->getUserById($userId);
+
+        if (!empty($userData)) {
+            return response()->json([
+                'status' => true,
+                'msg'    => 'User data found',
+                'data'   => $userData,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'msg'    => 'No data found',
+            ]);
         }
-        return response()->json($result);
     }
     /* Update user */
     public function update(Request $request) {

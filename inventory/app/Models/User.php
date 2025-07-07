@@ -21,7 +21,9 @@ class User extends Authenticatable
         'password',
         'profile_image',
         'status',
-        'mobile_number'
+        'mobile_number',
+        'jsontext',
+        'warehouse_store_id',
     ];
 
     protected $hidden = [
