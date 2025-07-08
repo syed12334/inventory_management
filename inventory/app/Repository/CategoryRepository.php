@@ -1,34 +1,108 @@
 <?php
 
 namespace App\Repository;
+
 use App\Models\Categories;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class CategoryRepository
 {
-    protected $category;
+    protected $categoryModel;
+
     public function __construct(Categories $category)
     {
-        $this->category = $category;
+        $this->categoryModel = $category;
     }
-    /* To fetch category list */
-    public function index() {
-        return $this->category->select(['category_id','title','status','created_at'])->where('status','!=',2)->get();
-    }
-    /* To add category*/
-    public function create() {
 
-    }
-    /* To store category */
-    public function store() {
+    /**
+     * Fetch all active (non-deleted) categories
+     */
+   public function getCategory(array $filters = [])
+   {
+        $paginate = 10;
 
-    }
-     /* To update category */
-    public function update() {
+        if (!empty($filters['paging'])) {
+            $paginate = (int) $filters['paging'];
+        }
 
-    }
-     /* To status change category */
-    public function statusChange() {
+        $query = $this->categoryModel->query();
 
+        if (isset($filters['status'])) {
+            if ($filters['status'] == -1) {
+                $query->whereIn('status', [0, 1]);
+            } else {
+                $query->where('status', $filters['status']);
+            }
+        }
+
+        return $query
+            ->where('status', '!=', 2)
+            ->orderByDesc('created_at')
+            ->paginate($paginate);
+    }
+
+    public function getCategoryById($id)
+    {
+        return $this->categoryModel->where('category_id', $id)->first();
+    }
+    /**
+     * Store a new category
+     */
+    public function store(array $data)
+    {
+        try {
+            return $this->categoryModel->create($data);
+        } catch (\Exception $e) {
+            Log::error('Category creation failed: ' . $e->getMessage(), [
+                'data' => $data,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Update a category by ID
+     */
+    public function update(int $id, array $data)
+    {
+        try {
+            $category = $this->categoryModel->findOrFail($id);
+            $category->update($data);
+            return $category;
+        } catch (\Exception $e) {
+            Log::error('Category update failed: ' . $e->getMessage(), [
+                'category_id' => $id,
+                'data' => $data,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Change status of a category by ID
+     */
+    public function statusChange(int $id, int $status)
+    {
+        try {
+            $category = $this->categoryModel->findOrFail($id);
+            $category->status = $status;
+            $category->save();
+            return $category;
+        } catch (\Exception $e) {
+            Log::error('Category status change failed: ' . $e->getMessage(), [
+                'category_id' => $id,
+                'status' => $status,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return false;
+        }
     }
 }

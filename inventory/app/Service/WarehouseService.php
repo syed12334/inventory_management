@@ -192,68 +192,6 @@ class WarehouseService
         return ['status' => true];
     }
 
-    /*public function userData($userInput, $action = 'create')
-    {
-        if ($action === "create") {
-
-            if (!isset($userInput['name'], $userInput['email'], $userInput['mobile_number'], $userInput['password'], $userInput['role'])) {
-                return [
-                    'status' => false,
-                    'msg'    => 'Missing required fields for user creation.',
-                ];
-            }
-            
-        if ($userList) {
-               
-            }
-
-            return [
-                'status' => false,
-                'msg'    => 'Unable to create user',
-            ];
-        }
-
-        // Update logic
-        if ($action === "update") {
-            if (!isset($userInput['user_id'], $userInput['role'])) {
-                return [
-                    'status' => false,
-                    'msg'    => 'Missing user ID or role for update.',
-                ];
-            }
-
-            $user_id     = $userInput['user_id'];
-            $usersLists  = $this->userRepository->findById($user_id);
-
-            if (!$usersLists) {
-                return [
-                    'status' => false,
-                    'msg'    => 'User not found for update.',
-                ];
-            }
-
-            $usersLists->syncRoles($userInput['role']);
-            
-            $userLogs = [
-                'user_id' => $user_id,
-                'type'    => 2,
-            ];
-
-            $this->userRepository->userLogInsert($userLogs);
-
-            return [
-                'status' => true,
-                'msg'    => 'User updated successfully',
-                'data'   => $usersLists,
-            ];
-        }
-
-        return [
-            'status' => false,
-            'msg'    => 'Invalid action type',
-        ];
-    } */
-
     public function prepareBuildData(array $request, string $type = 'create', $existing = null)
     {
         $data = [
