@@ -30,6 +30,13 @@ Route::prefix('warehouse')->name('warehouse.')->group(function () {
     Route::post('/multipleDelete',[WarehouseController::class,'deleteMultiple'])->name('multipleDelete');
 });
 
+Route::prefix('category')->name('category.')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::post('/editCategory', [CategoryController::class, 'edit'])->name('editCategory');
+    Route::post('/storeCategory', [CategoryController::class, 'store'])->name('storeCategory');
+    Route::post('/updateCategory',[CategoryController::class, 'update'])->name('updateCategory');
+});
+
 Route::prefix('store')->name('store.')->group(function () {
     Route::get('/', [StoreController::class, 'index'])->name('index');
     Route::post('/store-store-user', [WarehouseController::class, 'store'])->name('store-store-user');
@@ -39,11 +46,11 @@ Route::prefix('store')->name('store.')->group(function () {
 
 
 /* Category routes */
-Route::controller(CategoryController::class)->group(function() {
+/*Route::controller(CategoryController::class)->group(function() {
     Route::get('category','index')->name('category');
     Route::post('storeCategory','storeCategory')->name('storeCategory');
     Route::get('categoryFac','categoryFac')->name('categoryFac');
-});
+});*/
 /* Role Routes */
 Route::controller(RoleController::class)->group(function() {
     Route::get('roles','index')->name('roles');

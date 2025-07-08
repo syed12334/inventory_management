@@ -9,11 +9,14 @@ class Categories extends Model
 {
     use HasFactory;
 
+    protected $table = 'categories'; 
+
+    protected $primaryKey = 'category_id'; 
+    public $timestamps = true; 
+
     protected $fillable = [
-        'category_id',
         'title',
         'slug',
-        'status',
-        'created_at'
+        'status'
     ];
 }
