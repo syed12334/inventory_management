@@ -6,9 +6,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\StoreController;
-
-Route::get('/', function () {
-    return view('login');
+use App\Http\Controllers\DashboardController;
+/* Dashboard */
+Route::controller(DashboardController::class)->middleware(AuthMiddleware::class)->group(function() {
+    Route::get('dashboard','index')->name('dashboard');
 });
 
 /* User routes */
