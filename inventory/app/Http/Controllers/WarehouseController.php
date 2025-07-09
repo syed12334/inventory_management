@@ -13,13 +13,11 @@ class WarehouseController extends Controller
         $this->warehouseService  = $warehouseService;
     }
     /* Fetch all user table */
-
     public function index(Request $request)
     {
         $warehouse_filters = [
             'role_scope' => 'warehouse'
         ];
-
         if (!empty($request->all())) {
             $warehouse_filters = array_merge($warehouse_filters, $request->all());
         }
@@ -91,16 +89,12 @@ class WarehouseController extends Controller
             }
         } catch (\Exception $e) {
             \Log::error('Error in editwarehouse: ' . $e->getMessage());
-
             return response()->json([
                 'status' => false,
                 'msg' => 'Server error. Please try again later.'
             ], 500);
         }
     }
-
-
-    /* Update user */
     public function update(Request $request) {
        return $this->warehouseService->userUpdate($request->all());
     }

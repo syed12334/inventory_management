@@ -8,38 +8,33 @@ use Illuminate\Support\Facades\Log;
 class CategoryRepository
 {
     protected $categoryModel;
-
     public function __construct(Categories $category)
     {
         $this->categoryModel = $category;
     }
+    public function getCategory(array $filters = [])
+    {
+            $paginate = 10;
 
-    /**
-     * Fetch all active (non-deleted) categories
-     */
-   public function getCategory(array $filters = [])
-   {
-        $paginate = 10;
-
-        if (!empty($filters['paging'])) {
-            $paginate = (int) $filters['paging'];
-        }
-
-        $query = $this->categoryModel->query();
-
-        if (isset($filters['status'])) {
-            if ($filters['status'] == -1) {
-                $query->whereIn('status', [0, 1]);
-            } else {
-                $query->where('status', $filters['status']);
+            if (!empty($filters['paging'])) {
+                $paginate = (int) $filters['paging'];
             }
-        }
 
-        return $query
-            ->where('status', '!=', 2)
-            ->orderByDesc('created_at')
-            ->paginate($paginate);
-    }
+            $query = $this->categoryModel->query();
+
+            if (isset($filters['status'])) {
+                if ($filters['status'] == -1) {
+                    $query->whereIn('status', [0, 1]);
+                } else {
+                    $query->where('status', $filters['status']);
+                }
+            }
+
+            return $query
+                ->where('status', '!=', 2)
+                ->orderByDesc('created_at')
+                ->paginate($paginate);
+        }
 
     public function getCategoryById($id)
     {

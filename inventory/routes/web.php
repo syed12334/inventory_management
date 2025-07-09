@@ -42,7 +42,18 @@ Route::prefix('store')->name('store.')->group(function () {
     Route::post('/store-store-user', [WarehouseController::class, 'store'])->name('store-store-user');
 });
 
-
+/* Login Routes */
+Route::controller(LoginController::class)->group(function() {
+    Route::post('loginUser','login')->name('loginUser')->middleware('throttle:5,5');
+    Route::get('logout','logout')->name('logout');
+});
+/* Login Home */
+  Route::get('/',function() {
+    if (Auth::check()) {
+        return redirect('/dashboard'); 
+    }
+    return view('login');
+  });
 
 
 /* Category routes */
