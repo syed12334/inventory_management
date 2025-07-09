@@ -13,9 +13,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('warehouse_store_id')->nullable()->after('password');
-
-            // Optional: Add foreign key constraint (if users table is self-referencing)
-            // $table->foreign('warehouse_store_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

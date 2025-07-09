@@ -98,8 +98,6 @@ class StoreController extends Controller
             ], 500);
         }
     }
-
-
     /* Update user */
     public function update(Request $request) {
        return $this->warehouseService->userUpdate($request->all());
