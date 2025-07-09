@@ -58,6 +58,14 @@ class CategoryRepository
         }
     }
 
+    public function checkDuplicateName(string $name, $id)
+    {
+        return $this->categoryModel
+            ->where('title', $name)
+            ->where('category_id', '!=', $id)
+            ->exists();
+    }
+
     /**
      * Update a category by ID
      */
