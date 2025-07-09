@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Repository\CategoryRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class CategoryService
 {   
@@ -72,14 +73,15 @@ class CategoryService
         $rules = [
             'name' => [
                 'required',
-                'regex:/^[a-zA-Z0-9\s]+$/',
+                'regex:/^[a-zA-Z0-9\s]+$/'
             ],
         ];
 
         if ($type === 'update' && $categoryId) {
-           $rules['name'][] = 'unique:categories,title,' . $categoryId . ',category_id';
+            $rules['name'][] = Rule::unique('categories', 'title')->ignore($categoryId, 'category_id');
+
         } else {
-            $rules['name'][] = 'unique:categories,title';
+            $rules['name'][] = Rule::unique('categories', 'title');
         }
 
         $messages = [
@@ -100,7 +102,8 @@ class CategoryService
         return ['status' => true];
     }
 
-    /**
+    
+     /**
      * Prepare data for create or update
      */
     protected function prepareBuildData(array $request, string $type, $existing = null)
@@ -120,31 +123,46 @@ class CategoryService
 
     public function updateCategory(array $request)
     {
-        $categoryId = $request['category_id'];
-        $category = $this->categoryrepo->getCategoryById($categoryId);
+        try {
+            $categoryId = $request['category_id'];
+            $category = $this->categoryrepo->getCategoryById($categoryId);
 
-        if (!$category) {
-            return response()->json([
+            if (!$category) {
+                return [
+                    'status' => false,
+                    'msg'    => 'Category not found.',
+                    'code'   => 404,
+                ];
+            }
+
+            $validation = $this->validateCategory($request, 'update');
+
+            if (!$validation['status']) {
+                return [
+                    'status' => false,
+                    'msg'    => 'Validation failed.',
+                    'errors' => $validation['errors'],
+                    'code'   => 422,
+                ];
+            }
+
+            $updatedData = $this->prepareBuildData($request, 'update', $category);
+            $updated = $this->categoryrepo->update($categoryId, $updatedData);
+
+            return [
+                'status' => true,
+                'data'   => $updated,
+                'msg'    => 'Category updated successfully.',
+            ];
+        } catch (\Exception $e) {
+            return [
                 'status' => false,
-                'code'   => 404,
-                'message' => 'Category not found.',
-            ], 404);
+                'msg'    => 'An unexpected error occurred: ' . $e->getMessage(),
+                'code'   => 500,
+            ];
         }
-
-        $validation = $this->validateCategory($request, 'update');
-
-        if (!$validation['status']) {
-            return response()->json([
-                'status' => false,
-                'code'   => 422,
-                'errors' => $validation['errors'],
-            ], 422);
-        }
-
-        $updatedData = $this->prepareBuildData($request, 'update', $category);
-        
-        $updated = $this->categoryrepo->update($categoryId, $updatedData);
-
-        return $updated;
     }
+
+
+
 }

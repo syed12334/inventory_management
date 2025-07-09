@@ -45,7 +45,6 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-   
         $result = $this->categoryService->create($request->all());
 
         if ($result) {
@@ -58,7 +57,7 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => false,
                 'msg'    => 'Failed to create category',
-            ], 500);
+            ]);
         }
     }
 
@@ -66,18 +65,19 @@ class CategoryController extends Controller
     {
         $result = $this->categoryService->updateCategory($request->all());
 
-        if ($result) {
+        if ($result['status'] === true) {
             return response()->json([
-                'status' => true,
-                'msg'    => 'Category updated successfully.',
-                'data'   => $result
+                'status'  => true,
+                'msg' => 'Category updated successfully.',
+                'data'    => $result['data'] ?? null,
             ], 200);
         }
-
+        
         return response()->json([
-            'status' => false,
-            'msg'    => 'Failed to update category.',
-        ], 500);
+            'status'  => false,
+            'msg' => $result['message'] ?? 'Failed to update category.',
+            'errors'  => $result['errors'] ?? null,
+        ], 422);
     }
 
 }

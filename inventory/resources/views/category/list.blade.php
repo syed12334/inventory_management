@@ -174,11 +174,13 @@
             });
         });
 
-        function editCategory(category_id) {
+    const editCategoryUrl = "{{ route('category.editCategory') }}";
+    const updateCategoryUrl = "{{ route('category.updateCategory') }}";
+
+   function editCategory(category_id) {
     $.ajax({
-        url: "{{ route('category.editCategory') }}",
-        method: "POST",
-        cache: false,
+        url: editCategoryUrl,
+        type: "POST",
         dataType: "json",
         data: {
             category_id: category_id,
@@ -187,40 +189,88 @@
         success: function(response) {
             if (response.status === true) {
                 const category = response.data;
+
+                $("#categoryform")[0].reset();
                 $("#name").val(category.title);
-                 $('#category_id').val(category.category_id);
+                $("#category_id").val(category.category_id);
                 $("#modalTitle").text('Edit Category');
                 $("#add-category").modal('show');
                 $("#categorySubmitButton").text('Edit Category');
-                $("#categoryform").attr("action", "{{ route('category.updateCategory') }}");
+                $("#categoryform").attr("action", updateCategoryUrl);
+
+                $("#categoryform").off("submit").on("submit", function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    $.ajax({
+                        url: updateCategoryUrl,
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(res) {
+                            if (res.status) {
+                                $('#add-category').modal('hide');
+                                toastr.success(res.msg || "Category updated successfully.");
+                                $.ajax({
+                                    url: "{{ route('category.index') }}",
+                                    type: 'GET',
+                                    success: function(listRes) {
+                                        $('#usersListtable').html(listRes.html);
+                                    },
+                                    error: function() {
+                                        toastr.error('Failed to refresh category list.');
+                                    }
+                                });
+                            } else {
+                                toastr.error(res.msg || "Update failed.");
+                            }
+                        },
+                        error: function(jqXHR) {
+                            let msg = "Something went wrong!";
+                            try {
+                                const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
+                                if (res.errors) {
+                                    const messages = Object.values(res.errors).flat().join('<br>');
+                                    toastr.error(messages);
+                                    return;
+                                } else if (res.msg) {
+                                    toastr.error(res.msg);
+                                    return;
+                                }
+                            } catch (err) {
+                                console.error("Error parsing response:", err);
+                            }
+                            toastr.error(msg);
+                        }
+                    });
+                });
 
             } else {
-                alert(response.msg || "Category not found.");
+                alert(response.message || "Unable to load category.");
             }
         },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", {
-                status: xhr.status,
-                responseText: xhr.responseText,
-                errorThrown: error
-            });
-
-            let errorMsg = "Something went wrong. Please try again.";
-
-            // Try to parse Laravel validation or exception message
-            try {
-                const res = JSON.parse(xhr.responseText);
-                if (res.message) {
-                    errorMsg = res.message;
+        error: function(jqXHR, textStatus, errorThrown) {
+                let msg = "Something went wrong!";
+                try {
+                    const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
+                    if (res.errors) {
+                        const messages = Object.values(res.errors).flat().join('<br>');
+                        toastr.error(messages);
+                        return;
+                    } else if (res.msg) {
+                        toastr.error(res.msg);
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Error parsing response:", err);
                 }
-            } catch (e) {
-                // Response not JSON — fallback to default
+                toastr.error(msg);
             }
+        });
+    }
 
-            alert(errorMsg);
-        }
-    });
-}
 
 
     </script>
