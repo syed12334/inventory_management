@@ -39,6 +39,14 @@ class CategoryRepository
             ->paginate($paginate);
     }
 
+    public function getCategoryAll()
+    {
+        return $this->categoryModel
+                    ->where('status', '!=', 2)
+                    ->orderBy('title', 'asc')
+                    ->get();
+    }
+
     public function getSubCategory(array $filters = [])
     {
         $paginate = 10;
