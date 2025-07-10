@@ -1,27 +1,26 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use App\Models\Category;
 
-class Categories extends Model
+class SubCategory extends Model
 {
     use HasFactory;
 
-    protected $table = 'categories';
-
-    protected $primaryKey = 'category_id';
-
+    protected $table = 'subcategories';
+    protected $primaryKey = 'subcategory_id';
     public $timestamps = true;
 
     protected $fillable = [
-        'title',
+        'subcategory_name',
         'slug',
         'status',
         'user_id',
-        'category_uuid',
+        'subcategory_uuid',
+        'category_id',
     ];
 
     protected static function boot()
@@ -29,8 +28,8 @@ class Categories extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (empty($model->category_uuid)) {
-                $model->category_uuid = (string) Str::uuid();
+            if (empty($model->subcategory_uuid)) {
+                $model->subcategory_uuid = (string) Str::uuid();
             }
         });
     }
@@ -39,5 +38,11 @@ class Categories extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // 🔗 Relationship with Category
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

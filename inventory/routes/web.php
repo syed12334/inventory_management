@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\LoginController;
@@ -46,6 +47,13 @@ Route::middleware([AuthMiddleware::class])->group(function () {
         Route::post('/editCategory', [CategoryController::class, 'edit'])->name('editCategory');
         Route::post('/storeCategory', [CategoryController::class, 'store'])->name('storeCategory');
         Route::post('/updateCategory', [CategoryController::class, 'update'])->name('updateCategory');
+    });
+
+    Route::prefix('subcategory')->name('subcategory.')->group(function () {
+        Route::get('/', [SubCategoryController::class, 'index'])->name('index');
+        Route::post('/editCategory', [SubCategoryController::class, 'edit'])->name('editCategory');
+        Route::post('/storeCategory', [SubCategoryController::class, 'store'])->name('storeCategory');
+        Route::post('/updateCategory', [SubCategoryController::class, 'update'])->name('updateCategory');
     });
 
     Route::prefix('store')->name('store.')->group(function () {
