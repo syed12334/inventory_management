@@ -2,44 +2,71 @@
 
 namespace App\Repository;
 
-use App\Models\Categories;
+use App\Models\Category;
+use App\Models\SubCategory;
 use Illuminate\Support\Facades\Log;
 
 class CategoryRepository
 {
     protected $categoryModel;
-    public function __construct(Categories $category)
+    protected $subcategoryModel;
+    public function __construct(Category $category, SubCategory  $subcategory)
     {
         $this->categoryModel = $category;
+        $this->subcategoryModel = $subcategory;
     }
+
     public function getCategory(array $filters = [])
     {
-            $paginate = 10;
+        $paginate = 10;
 
-            if (!empty($filters['paging'])) {
-                $paginate = (int) $filters['paging'];
-            }
-
-            $query = $this->categoryModel->query();
-
-            if (isset($filters['status'])) {
-                if ($filters['status'] == -1) {
-                    $query->whereIn('status', [0, 1]);
-                } else {
-                    $query->where('status', $filters['status']);
-                }
-            }
-
-            return $query
-                ->where('status', '!=', 2)
-                ->orderByDesc('created_at')
-                ->paginate($paginate);
+        if (!empty($filters['paging'])) {
+            $paginate = (int) $filters['paging'];
         }
+
+        $query = $this->categoryModel->query();
+
+        if (isset($filters['status'])) {
+            if ($filters['status'] == -1) {
+                $query->whereIn('status', [0, 1]);
+            } else {
+                $query->where('status', $filters['status']);
+            }
+        }
+        
+        return $query->where('status', '!=', 2)
+            ->orderByDesc('created_at')
+            ->paginate($paginate);
+    }
+
+    public function getSubCategory(array $filters = [])
+    {
+        $paginate = 10;
+
+        if (!empty($filters['paging'])) {
+            $paginate = (int) $filters['paging'];
+        }
+
+        $query = $this->subcategoryModel->query();
+
+        if (isset($filters['status'])) {
+            if ($filters['status'] == -1) {
+                $query->whereIn('status', [0, 1]);
+            } else {
+                $query->where('status', $filters['status']);
+            }
+        }
+        
+        return $query->where('status', '!=', 2)
+            ->orderByDesc('created_at')
+            ->paginate($paginate);
+    }
 
     public function getCategoryById($id)
     {
         return $this->categoryModel->where('category_id', $id)->first();
     }
+    
     /**
      * Store a new category
      */

@@ -6,6 +6,8 @@ use App\Repository\CategoryRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+
 
 class CategoryService
 {   
@@ -16,9 +18,18 @@ class CategoryService
         $this->categoryrepo = $categories;
     }
 
+   
+    /**
+     * Fetch all Sub categories
+    */
+    public function getSubCategory($request) 
+    {
+        return $this->categoryrepo->getSubCategory($request);
+    }
+
     /**
      * Fetch all categories
-     */
+    */
     public function getCategory($request)
     {
         return $this->categoryrepo->getCategory($request);
@@ -114,9 +125,10 @@ class CategoryService
             $slug = $existing->slug;
         }
 
-        return [
+       return [
             'title' => $request['name'],
             'slug' => $slug,
+            'user_id' => Auth::user()->id,
             'status' => $request['status'] ?? 1,
         ];
     }
