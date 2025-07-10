@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Category')
+@section('title', 'Sub Category')
 
 @push('style')
     <style>
@@ -16,7 +16,7 @@
         <div class="page-header">
             <div class="add-item d-flex">
                 <div class="page-title">
-                    <h4 class="fw-bold">Category</h4>
+                    <h4 class="fw-bold">Sub Category</h4>
                     <h6>Manage your categories</h6>
                 </div>
             </div>
@@ -29,13 +29,13 @@
             </ul>
 
             <div class="page-btn">
-                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-category">
-                    <i class="ti ti-circle-plus me-1"></i>Add Category
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-subcategory">
+                    <i class="ti ti-circle-plus me-1"></i>Add Sub Category
                 </a>
             </div>
         </div>
 
-        <!-- Category List -->
+        <!-- sub Category List -->
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
                 <div class="search-set">
@@ -60,43 +60,58 @@
             </div>
 
             <div class="card-body p-0">
-                <div class="table-responsive" id="categoryListtable">
-                     @include('category.partials.table', ['categories' => $categories])
+                <div class="table-responsive" id="subcategoryListtable">
+                     @include('subcategory.partials.table', ['subcategories' => $subcategories])
                 </div>
             </div>
         </div>
-        <!-- /Category List -->
+        <!-- /sub Category List -->
     </div>
 
-    <!-- Add Category Modal -->
-    <div class="modal fade" id="add-category" tabindex="-1">
+    <!-- Add sub Category Modal -->
+    <div class="modal fade" id="add-subcategory" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="page-title">
-                        <h4 id="modalTitle">Add Category</h4>
+                        <h4 id="modalTitle">Add Sub Category</h4>
                     </div>
                     <button type="button" class="close bg-danger text-white fs-16" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
-                <form action="{{ route('category.storeCategory') }}" method="post" id="categoryform">
-                    <input type="hidden" name="category_id" id="category_id" value="">
+                <form action="{{ route('subcategory.storeCategory') }}" method="post" id="categoryform">
+                    <input type="hidden" name="sub_category_id" id="sub_category_id" value="">
                     @csrf
+
                     <div class="modal-body">
+                        {{-- sub Category Selection --}}
                         <div class="mb-3">
-                            <label class="form-label">Category<span class="text-danger ms-1">*</span></label>
-                            <input type="text" class="form-control" name="name" id="name" placeholder="Category Name" required>
+                            <label class="form-label">Select Category <span class="text-danger ms-1">*</span></label>
+                            <select class="form-select" name="category_id" id="category_id" required>
+                                <option value="">-- Select Category --</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->category_id }}">{{ $category->title }}</option>
+                                @endforeach
+                            </select>
+                            <span class="text-danger" id="error_category_id"></span>
+                        </div>
+
+                        {{-- Subcategory Name --}}
+                        <div class="mb-3">
+                            <label class="form-label">Subcategory Name <span class="text-danger ms-1">*</span></label>
+                            <input type="text" class="form-control" name="name" id="name" placeholder="Subcategory Name" required>
                             <span class="text-danger" id="error_name"></span>
                         </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn me-2 btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="categorySubmitButton">Add Category</button>
-
+                        <button type="submit" class="btn btn-primary" id="categorySubmitButton">Add Subcategory</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
@@ -112,17 +127,24 @@
         });
 
         $(document).ready(function () {
+
             $("#categoryform").validate({
                 rules: {
+                    category_id: {
+                        required: true
+                    },
                     name: {
                         required: true,
                         minlength: 3
                     }
                 },
                 messages: {
+                    category_id: {
+                        required: "Please select a category"
+                    },
                     name: {
-                        required: "Please enter a category",
-                        minlength: "Your category name must consist of at least 3 characters"
+                        required: "Please enter a sub category",
+                        minlength: "Your sub category name must consist of at least 3 characters"
                     }
                 },
                 submitHandler: function (form) {
@@ -137,20 +159,20 @@
                         success: function (res) {
                             if (res.status === true) {
                                 toastr.success(res.msg);
-                                $('#add-category').modal('hide');
-                               
+                                $('#add-subcategory').modal('hide');
 
+                                // Refresh subcategory list via AJAX
                                 $.ajax({
-                                    url: "{{ route('category.index') }}",
+                                    url: "{{ route('subcategory.index') }}",
                                     type: 'GET',
                                     success: function (res) {
-                                        $('#categoryListtable').html(res.html);
+                                        $('#subcategoryListtable').html(res.html);
                                     },
                                     error: function () {
-                                        toastr.error('Failed to refresh category list.');
+                                        toastr.error('Failed to refresh sub category list.');
                                     }
                                 });
-                            } else if (res.status === 422) {
+                            } else if (res.status === 422 && res.errors) {
                                 $.each(res.errors, function (key, val) {
                                     $('#error_' + key).text(val[0]);
                                     $("#" + key).addClass('error');
@@ -166,16 +188,15 @@
                             }
                             toastr.error(msg);
                         }
-                    }); 
+                    });
 
                     return false;
-                    
                 }
             });
-        });
+    });
 
-    const editCategoryUrl = "{{ route('category.editCategory') }}";
-    const updateCategoryUrl = "{{ route('category.updateCategory') }}";
+    const editCategoryUrl = "{{ route('subcategory.editCategory') }}";
+    const updateCategoryUrl = "{{ route('subcategory.updateCategory') }}";
 
    function editCategory(category_id) {
     $.ajax({
@@ -194,7 +215,7 @@
                 $("#name").val(category.title);
                 $("#category_id").val(category.category_id);
                 $("#modalTitle").text('Edit Category');
-                $("#add-category").modal('show');
+                $("#add-subcategory").modal('show');
                 $("#categorySubmitButton").text('Edit Category');
                 $("#categoryform").attr("action", updateCategoryUrl);
 
@@ -211,13 +232,13 @@
                         contentType: false,
                         success: function(res) {
                             if (res.status) {
-                                $('#add-category').modal('hide');
-                                toastr.success(res.msg || "Category updated successfully.");
+                                $('#add-subcategory').modal('hide');
+                                toastr.success(res.msg || "SUb Category updated successfully.");
                                 $.ajax({
-                                    url: "{{ route('category.index') }}",
+                                    url: "{{ route('subcategory.index') }}",
                                     type: 'GET',
                                     success: function(listRes) {
-                                        $('#usersListtable').html(listRes.html);
+                                        $('#subcategoryListtable').html(res.html);
                                     },
                                     error: function() {
                                         toastr.error('Failed to refresh category list.');
@@ -248,7 +269,7 @@
                 });
 
             } else {
-                alert(response.message || "Unable to load category.");
+                alert(response.message || "Unable to load sub category.");
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {

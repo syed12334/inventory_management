@@ -15,12 +15,14 @@ class SubCategoryController extends Controller
     {
         $subcategories = $this->categoryService->getSubCategory($request->all());
 
+        $categories = $this->categoryService->getCategoryAll();
+
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('subcategory.partials.table', compact('categories'))->render(),
+                'html' => view('subcategory.partials.table', compact('subcategories'))->render(),
             ]);
         }
-        return view('category.list', compact('subcategories'));
+        return view('subcategory.list', compact('subcategories', 'categories'));
     }
 
     public function edit(Request $request) 
@@ -45,7 +47,7 @@ class SubCategoryController extends Controller
 
     public function store(Request $request)
     {
-        $result = $this->categoryService->create($request->all());
+        $result = $this->categoryService->createSubCategory($request->all());
 
         if ($result) {
             return response()->json([

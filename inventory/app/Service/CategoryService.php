@@ -35,6 +35,11 @@ class CategoryService
         return $this->categoryrepo->getCategory($request);
     }
 
+    public function getCategoryAll()
+    {
+        return $this->categoryrepo->getCategoryAll();
+    }
+
     public function getCategoryById($id)
     {
         return $this->categoryrepo->getCategoryById($id);
