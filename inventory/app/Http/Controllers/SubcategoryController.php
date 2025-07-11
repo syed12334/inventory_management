@@ -14,7 +14,7 @@ class SubCategoryController extends Controller
     public function index(Request $request)
     {
         $subcategories = $this->categoryService->getSubCategory($request->all());
-
+        
         $categories = $this->categoryService->getCategoryAll();
 
         if ($request->ajax()) {
@@ -27,21 +27,21 @@ class SubCategoryController extends Controller
 
     public function edit(Request $request) 
     {
-        $categoryId = $request->input('category_id');
+        $subcategoryId = $request->input('sub_category_id');
 
-        $category = $this->categoryService->getCategoryById($categoryId);
+        $subcategory = $this->categoryService->getSubCategoryById($subcategoryId);
 
-        if ($category) {
+        if ($subcategory) {
             return response()->json([
                 'status' => true,
-                'msg'    => 'Category data found.',
-                'data'   => $category
+                'msg'    => 'Sub Category data found.',
+                'data'   => $subcategory
             ]);
         }
 
         return response()->json([
             'status' => false,
-            'msg'    => 'No category data found.'
+            'msg'    => 'No SUb category data found.'
         ], 404);
     }
 
@@ -58,26 +58,26 @@ class SubCategoryController extends Controller
         } else {
             return response()->json([
                 'status' => false,
-                'msg'    => 'Failed to create category',
+                'msg'    => 'Failed to create sub category',
             ]);
         }
     }
 
     public function update(Request $request)
     {
-        $result = $this->categoryService->updateCategory($request->all());
+        $result = $this->categoryService->updateSubCategory($request->all());
 
         if ($result['status'] === true) {
             return response()->json([
                 'status'  => true,
-                'msg' => 'Category updated successfully.',
+                'msg' => 'Sub Category updated successfully.',
                 'data'    => $result['data'] ?? null,
             ], 200);
         }
         
         return response()->json([
             'status'  => false,
-            'msg' => $result['message'] ?? 'Failed to update category.',
+            'msg' => $result['message'] ?? 'Failed to update sub category.',
             'errors'  => $result['errors'] ?? null,
         ], 422);
     }

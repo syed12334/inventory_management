@@ -17,8 +17,7 @@ class CategoryService
     {
         $this->categoryrepo = $categories;
     }
-
-   
+    
     /**
      * Fetch all Sub categories
     */
@@ -79,6 +78,42 @@ class CategoryService
         ], 500);
     }
 
+    public function createSubCategory(array $request)
+    {
+        $validation = $this->validateSubCategory($request, 'create');
+         
+        if (!$validation['status']) {
+            return response()->json([
+                'status' => false,
+                'code'   => 422,
+                'errors' => $validation['errors'],
+            ], 422);
+        }
+
+        $data = $this->prepareBuildDataSubCategory($request, 'create');
+
+        $subcategory = $this->categoryrepo->storesubcategory($data);
+        
+        if ($subcategory) {
+            return response()->json([
+                'status' => true,
+                'msg'    => 'Sub Category created successfully.',
+                'data'   => $subcategory,
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'msg'    => 'Unable to create sub category.',
+            'data'   => null,
+        ], 500);
+
+    }
+
+    public function getSubCategoryById($id) {
+        return $this->categoryrepo->getSubCategoryById($id);
+    }
+
     /**
      * Validate category input
      */
@@ -118,6 +153,51 @@ class CategoryService
         return ['status' => true];
     }
 
+
+    /**
+     * Validate category input
+     */
+    public function validateSubCategory(array $data, string $type)
+    {
+        $subCategoryId = $data['sub_category_id'] ?? null;
+
+        $rules = [
+            'name' => [
+                'required',
+                'regex:/^[a-zA-Z0-9\s]+$/',
+                Rule::unique('subcategories', 'subcategory_name'),
+            ],
+            'category_id' => [
+                'required',
+                'exists:categories,category_id',
+            ],
+        ];
+
+        if ($type === 'update' && $subCategoryId) {
+            $rules['name'][2] = Rule::unique('subcategories', 'subcategory_name')
+                ->ignore($subCategoryId, 'subcategory_id');
+        }
+
+        $messages = [
+            'name.required'        => 'Sub-category name is required.',
+            'name.regex'           => 'Sub-category name may only contain letters, numbers, and spaces.',
+            'name.unique'          => 'This sub-category name already exists.',
+            'category_id.required' => 'Parent category is required.',
+            'category_id.exists'   => 'The selected parent category does not exist.',
+        ];
+
+        $validator = Validator::make($data, $rules, $messages);
+
+        if ($validator->fails()) {
+            return [
+                'status' => false,
+                'errors' => $validator->errors(),
+            ];
+        }
+
+        return ['status' => true];
+    }
+        
     
      /**
      * Prepare data for create or update
@@ -137,7 +217,70 @@ class CategoryService
             'status' => $request['status'] ?? 1,
         ];
     }
+   
+    /**
+     * Prepare data for create or update
+    */
+    protected function prepareBuildDataSubCategory(array $request, string $type, $existing = null)
+    {
+        $slug = Str::slug($request['name']);
 
+        if ($type === 'update' && $existing && $existing->name === $request['name']) {
+            $slug = $existing->slug;
+        }
+
+        return [
+            'user_id' => Auth::user()->id,
+            'category_id' => $request['category_id'],
+            'subcategory_name' => $request['name'],
+            'slug' => $slug,
+            'status' => $request['status'] ?? 1,
+        ];
+    }
+
+    public function updateSubCategory(array $request)
+    {
+        try {
+            $subcategoryId = $request['subcategory_id'];
+            $subcategory   = $this->categoryrepo->getSubCategoryById($subcategoryId);
+
+            if (!$subcategory) {
+                return [
+                    'status' => false,
+                    'msg'    => 'Sub-category not found.',
+                    'code'   => 404,
+                ];
+            }
+
+            $validation = $this->validateSubCategory($request, 'update');
+
+            if (!$validation['status']) {
+                return [
+                    'status' => false,
+                    'msg'    => 'Validation failed.',
+                    'errors' => $validation['errors'],
+                    'code'   => 422,
+                ];
+            }
+
+            $updatedData = $this->prepareBuildDataSubCategory($request, 'update', $subcategory);
+
+            $updated     = $this->categoryrepo->updateSubCategory($subcategoryId, $updatedData);
+
+            return [
+                'status' => true,
+                'data'   => $updated,
+                'msg'    => 'Sub-category updated successfully.',
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'msg'    => 'An unexpected error occurred: ' . $e->getMessage(),
+                'code'   => 500,
+            ];
+        }
+    }
+    
     public function updateCategory(array $request)
     {
         try {

@@ -72,8 +72,20 @@ class CategoryRepository
 
     public function getCategoryById($id)
     {
-        return $this->categoryModel->where('category_id', $id)->first();
+        return $this->categoryModel
+                    ->where('category_id', $id)
+                    ->where('status', '!=', 2)
+                    ->first();
     }
+
+    public function getSubCategoryById($id)
+    {
+        return $this->subcategoryModel
+                    ->where('subcategory_id', $id)
+                    ->where('status', '!=', 2)
+                    ->first();
+    }
+
     
     /**
      * Store a new category
@@ -91,6 +103,22 @@ class CategoryRepository
 
             return false;
         }
+    }
+
+    public function storesubcategory(array $data)
+    {
+        try {
+            return $this->subcategoryModel->create($data);
+        } catch (\Exception $e) {
+            Log::error('Sub Category creation failed: ' . $e->getMessage(), [
+                'data' => $data,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return false;
+        }
+
     }
 
     public function checkDuplicateName(string $name, $id)
@@ -121,6 +149,29 @@ class CategoryRepository
             return false;
         }
     }
+
+    
+    /**
+     * Update a category by ID
+     */
+    public function updateSubCategory(int $id, array $data)
+    {
+        try {
+            $subcategory = $this->subcategoryModel->findOrFail($id);
+            $subcategory->update($data);
+            return $subcategory;
+        } catch (\Exception $e) {
+            Log::error('SUb Category update failed: ' . $e->getMessage(), [
+                'category_id' => $id,
+                'data' => $data,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return false;
+        }
+    }
+
 
     /**
      * Change status of a category by ID
