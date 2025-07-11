@@ -67,15 +67,23 @@
                 </button>
             </div>
 
-            <form action="{{ route('brand.store') }}" method="post" id="brandForm">
+           <form action="{{ route('brand.store') }}" method="post" id="brandForm" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="brand_id" id="brand_id" value="">
 
                 <div class="modal-body">
+                    {{-- Brand Title --}}
                     <div class="mb-3">
                         <label class="form-label">Brand Title <span class="text-danger">*</span></label>
                         <input type="text" name="title" id="title" class="form-control" placeholder="Enter brand title" required>
                         <span class="text-danger" id="error_title"></span>
+                    </div>
+
+                    {{-- Brand Image --}}
+                    <div class="mb-3">
+                        <label class="form-label">Brand Image <span class="text-danger"></span></label>
+                        <input type="file" name="brand_img" id="brand_img" class="form-control" accept="image/*">
+                        <span class="text-danger" id="error_brand_img"></span>
                     </div>
                 </div>
 
@@ -84,6 +92,7 @@
                     <button type="submit" class="btn btn-primary" id="brandSubmitButton">Add Brand</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
@@ -91,14 +100,12 @@
 
 @push('script')
 <script>
-    const brandIndexUrl = "{{ route('brand.index') }}";
-    const brandEditUrl  = "{{ route('brand.edit') }}";
+    const brandIndexUrl  = "{{ route('brand.index') }}";
+    const brandEditUrl   = "{{ route('brand.edit') }}";
     const brandUpdateUrl = "{{ route('brand.update') }}";
 
     $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
 
     $(document).ready(function () {
@@ -107,16 +114,22 @@
                 title: {
                     required: true,
                     minlength: 2
+                },
+                brand_img: {
+                    extension: "png|jpeg|jpg|gif"   // optional & only these types
                 }
             },
             messages: {
                 title: {
                     required: "Please enter a brand name",
                     minlength: "Brand name must be at least 2 characters"
+                },
+                brand_img: {
+                    extension: "Only PNG, JPG, JPEG, or GIF files are allowed"
                 }
-            },
+            },  // ← **comma was missing here**
             submitHandler: function (form) {
-                let formData = new FormData(form);
+                const formData = new FormData(form);
 
                 $.ajax({
                     url: form.action,
@@ -132,7 +145,7 @@
                         } else if (res.errors) {
                             $.each(res.errors, function (key, val) {
                                 $('#error_' + key).text(val[0]);
-                                $("#" + key).addClass('error');
+                                $('#' + key).addClass('error');
                             });
                         }
                     },
@@ -141,7 +154,7 @@
                     }
                 });
 
-                return false;
+                return false; // prevent default form submit
             }
         });
     });
@@ -164,12 +177,12 @@
             url: brandEditUrl,
             type: 'POST',
             data: {
-                category_id: brand_id,
+                brand_id: brand_id,                  // use correct param name
                 _token: "{{ csrf_token() }}"
             },
             success: function (response) {
                 if (response.status) {
-                    let brand = response.data;
+                    const brand = response.data;
 
                     $('#brandForm')[0].reset();
                     $('#title').val(brand.title);
