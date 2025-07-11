@@ -82,7 +82,7 @@
                 </div>
 
                 <form action="{{ route('subcategory.storeCategory') }}" method="post" id="categoryform">
-                    <input type="hidden" name="sub_category_id" id="sub_category_id" value="">
+                    <input type="hidden" name="subcategory_id" id="subcategory_id" value="">
                     @csrf
 
                     <div class="modal-body">
@@ -198,25 +198,27 @@
     const editCategoryUrl = "{{ route('subcategory.editCategory') }}";
     const updateCategoryUrl = "{{ route('subcategory.updateCategory') }}";
 
-   function editCategory(category_id) {
+   function editSubCategory(sub_category_id) {
     $.ajax({
         url: editCategoryUrl,
         type: "POST",
         dataType: "json",
         data: {
-            category_id: category_id,
+             sub_category_id: sub_category_id,
             _token: "{{ csrf_token() }}"
         },
         success: function(response) {
             if (response.status === true) {
-                const category = response.data;
+                const subcategory = response.data;
 
                 $("#categoryform")[0].reset();
-                $("#name").val(category.title);
-                $("#category_id").val(category.category_id);
-                $("#modalTitle").text('Edit Category');
+                $("#name").val(subcategory.subcategory_name);
+                $("#category_id").val(subcategory.category_id);
+                $("#subcategory_id").val(subcategory.subcategory_id);
+
+                $("#modalTitle").text('Edit Sub Category');
                 $("#add-subcategory").modal('show');
-                $("#categorySubmitButton").text('Edit Category');
+                $("#categorySubmitButton").text('Edit Sub Category');
                 $("#categoryform").attr("action", updateCategoryUrl);
 
                 $("#categoryform").off("submit").on("submit", function(e) {
@@ -232,13 +234,14 @@
                         contentType: false,
                         success: function(res) {
                             if (res.status) {
+                                toastr.success(res.msg);
                                 $('#add-subcategory').modal('hide');
-                                toastr.success(res.msg || "SUb Category updated successfully.");
+                               // toastr.success(res.msg || "SUb Category updated successfully.");
                                 $.ajax({
                                     url: "{{ route('subcategory.index') }}",
                                     type: 'GET',
                                     success: function(listRes) {
-                                        $('#subcategoryListtable').html(res.html);
+                                        $('#subcategoryListtable').html(listRes.html);
                                     },
                                     error: function() {
                                         toastr.error('Failed to refresh category list.');

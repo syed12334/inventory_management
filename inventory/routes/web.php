@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
@@ -54,6 +55,13 @@ Route::middleware([AuthMiddleware::class])->group(function () {
         Route::post('/editCategory', [SubCategoryController::class, 'edit'])->name('editCategory');
         Route::post('/storeCategory', [SubCategoryController::class, 'store'])->name('storeCategory');
         Route::post('/updateCategory', [SubCategoryController::class, 'update'])->name('updateCategory');
+    });
+
+    Route::prefix('brand')->name('brand.')->group(function () {
+        Route::get('/', [BrandController::class, 'index'])->name('index');
+        Route::post('/edit', [BrandController::class, 'edit'])->name('edit');
+        Route::post('/store', [BrandController::class, 'store'])->name('store');
+        Route::post('/update', [BrandController::class, 'update'])->name('update');
     });
 
     Route::prefix('store')->name('store.')->group(function () {
