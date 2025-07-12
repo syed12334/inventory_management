@@ -2501,6 +2501,8 @@
 	<!-- jQuery -->
 	<script src="{{ asset('js/jquery-3.7.1.min.js');}}" type="text/javascript"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js"></script>
+
 	<!-- Feather Icon JS -->
 	<script src="{{ asset('js/feather.min.js');}}" type="text/javascript"></script>
 
