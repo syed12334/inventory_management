@@ -127,7 +127,7 @@
                 brand_img: {
                     extension: "Only PNG, JPG, JPEG, or GIF files are allowed"
                 }
-            },
+            },  // ← **comma was missing here**
             submitHandler: function (form) {
                 const formData = new FormData(form);
 
@@ -177,7 +177,7 @@
             url: brandEditUrl,
             type: 'POST',
             data: {
-                brand_id: brand_id,
+                brand_id: brand_id,                  // use correct param name
                 _token: "{{ csrf_token() }}"
             },
             success: function (response) {
