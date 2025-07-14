@@ -54,7 +54,7 @@
 	<!-- Main CSS -->
 	<link rel="stylesheet" href="{{ asset('css/style.css');}}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.css" />
-	  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	  
 	  <style>
 		.dropify-wrapper .dropify-message span.file-icon p {
 			font-size:18px!important
@@ -2502,6 +2502,7 @@
 	<script src="{{ asset('js/jquery-3.7.1.min.js');}}" type="text/javascript"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js"></script>
+  
 
 	<!-- Feather Icon JS -->
 	<script src="{{ asset('js/feather.min.js');}}" type="text/javascript"></script>
@@ -2515,6 +2516,7 @@
 	<!-- Datatables -->
 		<script src="{{ asset('js/jquery.dataTables.min.js');}}" type="text/javascript"></script>
 		<script src="{{ asset('js/dataTables.bootstrap5.min.js');}}" type="text/javascript"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- ApexChart JS -->
 	<script src="{{ asset('plugins/apexchart/apexcharts.min.js');}}" type="text/javascript"></script>
 	<script src="{{ asset('plugins/apexchart/chart-data.js');}}" type="text/javascript"></script>
