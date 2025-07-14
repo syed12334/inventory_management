@@ -69,21 +69,20 @@ class ColorService
 
         $rules = [
             'name' => [
-                'required', 'string', 'max:60',
-                Rule::unique('colors', 'name'),
+                'required',
+                'string',
+                'max:60',
+                Rule::unique('colors', 'name')->ignore($colorId, 'co_id'),
             ],
             'ccode' => [
-                'required', 'string', 'max:10',
+                'required',
+                'string',
+                'max:10',
                 'regex:/^#?[0-9A-F]{3,8}$/i',
-                Rule::unique('colors', 'ccode'),
+                Rule::unique('colors', 'ccode')->ignore($colorId, 'co_id'),
             ],
             'status' => ['nullable', 'integer'],
         ];
-
-        if ($mode === 'update' && $colorId) {
-            $rules['name'][3]  = Rule::unique('colors', 'name')->ignore($colorId, 'co_id');
-            $rules['ccode'][3] = Rule::unique('colors', 'ccode')->ignore($colorId, 'co_id');
-        }
 
         $validator = Validator::make($data, $rules, [
             'name.required'   => 'Color name is required.',
