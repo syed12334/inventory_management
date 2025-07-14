@@ -25,7 +25,7 @@ class ColorController extends Controller
             ]);
         }
 
-        return view('admin.color.list', compact('colors'));
+        return view('color.list', compact('colors'));
     }
 
     public function edit(Request $request)

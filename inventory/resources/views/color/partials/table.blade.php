@@ -7,33 +7,31 @@
                     <span class="checkmarks"></span>
                 </label>
             </th>
-            <th>Brand Name</th>
-            <th>Image</th>
+            <th>Color Name</th>
+            <th>Color Code</th>
             <th>Created On</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        @forelse ($brands as $brand)
+        @forelse ($colors as $color)
             <tr>
                 <td>
                     <label class="checkboxs">
-                        <input type="checkbox" class="select-row" value="{{ $brand->brand_id }}">
+                        <input type="checkbox" class="select-row" value="{{ $color->co_id }}">
                         <span class="checkmarks"></span>
                     </label>
                 </td>
-                <td>{{ $brand->title ?? '-' }}</td>
+                <td>{{ $color->name ?? '-' }}</td>
                 <td>
-                    @if($brand->brand_img)
-                        <img src="{{ asset('uploads/brand/' . $brand->brand_img) }}" alt="Brand Image" width="40" height="40">
-                    @else
-                        <span class="text-muted">No Image</span>
-                    @endif
+                    <span class="badge" style="background-color: {{ $color->ccode }}; color: #fff;">
+                        {{ $color->ccode }}
+                    </span>
                 </td>
-                <td>{{ $brand->created_at ? $brand->created_at->format('d M, Y') : '-' }}</td>
+                <td>{{ $color->created_at ? $color->created_at->format('d M, Y') : '-' }}</td>
                 <td>
-                    @if ($brand->status == 1)
+                    @if ($color->status == 1)
                         <span class="d-inline-flex align-items-center p-1 pe-2 rounded-1 text-white bg-success fs-10">
                             Active
                         </span>
@@ -45,21 +43,21 @@
                 </td>
                 <td class="action-table-data">
                     <div class="edit-delete-action">
-                        @if ($brand->status == 1)
-                            <a class="me-2 p-2 mb-0" onclick="changeBrandStatus({{ $brand->brand_id }}, 0, 'Are you sure you want to deactivate this brand?')">
-                                <i class="ti ti-lock-cancel" title="Deactivate Brand"></i>
+                        @if ($color->status == 1)
+                            <a class="me-2 p-2 mb-0" onclick="changeColorStatus({{ $color->co_id }}, 0, 'Are you sure you want to deactivate this color?')">
+                                <i class="ti ti-lock-cancel" title="Deactivate Color"></i>
                             </a>
                         @else
-                            <a class="me-2 p-2 mb-0" onclick="changeBrandStatus({{ $brand->brand_id }}, 1, 'Are you sure you want to activate this brand?')">
-                                <i class="ti ti-check" title="Activate Brand"></i>
+                            <a class="me-2 p-2 mb-0" onclick="changeColorStatus({{ $color->co_id }}, 1, 'Are you sure you want to activate this color?')">
+                                <i class="ti ti-check" title="Activate Color"></i>
                             </a>
                         @endif
 
-                        <a class="me-2 p-2 mb-0" onclick="editBrand({{ $brand->brand_id }})" title="Edit Brand">
+                        <a class="me-2 p-2 mb-0" onclick="editColor({{ $color->co_id }})" title="Edit Color">
                             <i class="ti ti-edit"></i>
                         </a>
 
-                        <a onclick="changeBrandStatus({{ $brand->brand_id }}, 2, 'Are you sure you want to delete this brand?')" class="p-2 mb-0" title="Delete Brand">
+                        <a onclick="changeColorStatus({{ $color->co_id }}, 2, 'Are you sure you want to delete this color?')" class="p-2 mb-0" title="Delete Color">
                             <i class="ti ti-trash"></i>
                         </a>
                     </div>
@@ -67,7 +65,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="text-center text-muted">No brands found.</td>
+                <td colspan="6" class="text-center text-muted">No colors found.</td>
             </tr>
         @endforelse
     </tbody>
@@ -82,6 +80,6 @@
     </select>
 
     <div class="paginglinks">
-        {{ $brands->withQueryString()->links() }}
+        {{ $colors->withQueryString()->links() }}
     </div>
 </div>

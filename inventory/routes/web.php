@@ -10,6 +10,7 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ColorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\AuthMiddleware;
 
@@ -62,6 +63,13 @@ Route::middleware([AuthMiddleware::class])->group(function () {
         Route::post('/edit', [BrandController::class, 'edit'])->name('edit');
         Route::post('/store', [BrandController::class, 'store'])->name('store');
         Route::post('/update', [BrandController::class, 'update'])->name('update');
+    });
+
+    Route::prefix('color')->name('color.')->group(function () {
+        Route::get('/', [ColorController::class, 'index'])->name('index');
+        Route::post('/edit', [ColorController::class, 'edit'])->name('edit');
+        Route::post('/store', [ColorController::class, 'store'])->name('store');
+        Route::post('/update', [ColorController::class, 'update'])->name('update');
     });
 
     Route::prefix('store')->name('store.')->group(function () {
