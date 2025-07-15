@@ -12,6 +12,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\SizeController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\AuthMiddleware;
 
@@ -79,6 +80,14 @@ Route::middleware([AuthMiddleware::class])->group(function () {
         Route::post('/store', [SizeController::class, 'store'])->name('store');
         Route::post('/update', [SizeController::class, 'update'])->name('update');
     });
+
+    Route::prefix('unit')->name('unit.')->group(function () {
+        Route::get('/', [UnitController::class, 'index'])->name('index');
+        Route::post('/edit', [UnitController::class, 'edit'])->name('edit');
+        Route::post('/store', [UnitController::class, 'store'])->name('store');
+        Route::post('/update', [UnitController::class, 'update'])->name('update');
+    });
+
 
     Route::prefix('store')->name('store.')->group(function () {
         Route::get('/', [StoreController::class, 'index'])->name('index');
