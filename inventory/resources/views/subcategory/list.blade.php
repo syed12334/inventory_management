@@ -118,184 +118,129 @@
 @endsection
 
 @push('script')
-    <script>
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $(document).ready(function () {
-
-            $("#categoryform").validate({
-                rules: {
-                    category_id: {
-                        required: true
-                    },
-                    name: {
-                        required: true,
-                        minlength: 3
-                    }
-                },
-                messages: {
-                    category_id: {
-                        required: "Please select a category"
-                    },
-                    name: {
-                        required: "Please enter a sub category",
-                        minlength: "Your sub category name must consist of at least 3 characters"
-                    }
-                },
-                submitHandler: function (form) {
-                    let formData = new FormData(form);
-
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (res) {
-                            if (res.status === true) {
-                                toastr.success(res.msg);
-                                $('#add-subcategory').modal('hide');
-
-                                // Refresh subcategory list via AJAX
-                                $.ajax({
-                                    url: "{{ route('subcategory.index') }}",
-                                    type: 'GET',
-                                    success: function (res) {
-                                        $('#subcategoryListtable').html(res.html);
-                                    },
-                                    error: function () {
-                                        toastr.error('Failed to refresh sub category list.');
-                                    }
-                                });
-                            } else if (res.status === 422 && res.errors) {
-                                $.each(res.errors, function (key, val) {
-                                    $('#error_' + key).text(val[0]);
-                                    $("#" + key).addClass('error');
-                                });
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            let msg = "Something went wrong!";
-                            if (jqXHR.status === 403) {
-                                msg = "Token error! Please try again.";
-                            } else {
-                                msg = textStatus + " - " + errorThrown;
-                            }
-                            toastr.error(msg);
-                        }
-                    });
-
-                    return false;
-                }
-            });
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
 
-    const editCategoryUrl = "{{ route('subcategory.editCategory') }}";
-    const updateCategoryUrl = "{{ route('subcategory.updateCategory') }}";
+    $(function () {
+        const $form = $('#categoryform');
+        const listUrl = "{{ route('subcategory.index') }}";
+        const storeUrl = "{{ route('subcategory.storeCategory') }}";
+        const editUrl = "{{ route('subcategory.editCategory') }}";
+        const updateUrl = "{{ route('subcategory.updateCategory') }}";
 
-   function editSubCategory(sub_category_id) {
-    $.ajax({
-        url: editCategoryUrl,
-        type: "POST",
-        dataType: "json",
-        data: {
-             sub_category_id: sub_category_id,
-            _token: "{{ csrf_token() }}"
-        },
-        success: function(response) {
-            if (response.status === true) {
-                const subcategory = response.data;
+        // Validation and Submit Handler
+        $form.validate({
+            rules: {
+                category_id: { required: true },
+                name: { required: true, minlength: 3 }
+            },
+            messages: {
+                category_id: { required: "Please select a category" },
+                name: {
+                    required: "Please enter a sub category",
+                    minlength: "Sub category must be at least 3 characters"
+                }
+            },
+            submitHandler: function (form) {
+                const formData = new FormData(form);
 
-                $("#categoryform")[0].reset();
-                $("#name").val(subcategory.subcategory_name);
-                $("#category_id").val(subcategory.category_id);
-                $("#subcategory_id").val(subcategory.subcategory_id);
-
-                $("#modalTitle").text('Edit Sub Category');
-                $("#add-subcategory").modal('show');
-                $("#categorySubmitButton").text('Edit Sub Category');
-                $("#categoryform").attr("action", updateCategoryUrl);
-
-                $("#categoryform").off("submit").on("submit", function(e) {
-                    e.preventDefault();
-
-                    const formData = new FormData(this);
-
-                    $.ajax({
-                        url: updateCategoryUrl,
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(res) {
-                            if (res.status) {
-                                toastr.success(res.msg);
-                                $('#add-subcategory').modal('hide');
-                               // toastr.success(res.msg || "SUb Category updated successfully.");
-                                $.ajax({
-                                    url: "{{ route('subcategory.index') }}",
-                                    type: 'GET',
-                                    success: function(listRes) {
-                                        $('#subcategoryListtable').html(listRes.html);
-                                    },
-                                    error: function() {
-                                        toastr.error('Failed to refresh category list.');
-                                    }
-                                });
-                            } else {
-                                toastr.error(res.msg || "Update failed.");
-                            }
-                        },
-                        error: function(jqXHR) {
-                            let msg = "Something went wrong!";
-                            try {
-                                const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
-                                if (res.errors) {
-                                    const messages = Object.values(res.errors).flat().join('<br>');
-                                    toastr.error(messages);
-                                    return;
-                                } else if (res.msg) {
-                                    toastr.error(res.msg);
-                                    return;
-                                }
-                            } catch (err) {
-                                console.error("Error parsing response:", err);
-                            }
-                            toastr.error(msg);
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        if (res.status === true) {
+                            toastr.success(res.msg);
+                            $('#add-subcategory').modal('hide');
+                            refreshSubcategoryList();
+                        } else if (res.status === 422 && res.errors) {
+                            $.each(res.errors, function (key, val) {
+                                $('#error_' + key).text(val[0]);
+                                $("#" + key).addClass('error');
+                            });
+                        } else {
+                            toastr.error(res.msg || "Something went wrong.");
                         }
-                    });
+                    },
+                    error: ajaxError
                 });
 
-            } else {
-                alert(response.message || "Unable to load sub category.");
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-                let msg = "Something went wrong!";
-                try {
-                    const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
-                    if (res.errors) {
-                        const messages = Object.values(res.errors).flat().join('<br>');
-                        toastr.error(messages);
-                        return;
-                    } else if (res.msg) {
-                        toastr.error(res.msg);
-                        return;
-                    }
-                } catch (err) {
-                    console.error("Error parsing response:", err);
-                }
-                toastr.error(msg);
+                return false;
             }
         });
-    }
 
+        function refreshSubcategoryList() {
+            $.get(listUrl)
+                .done(function (res) {
+                    $('#subcategoryListtable').html(res.html);
+                })
+                .fail(function () {
+                    toastr.error('Failed to refresh sub category list.');
+                });
+        }
 
+        function ajaxError(jqXHR, textStatus, errorThrown) {
+            let msg = "Something went wrong!";
+            try {
+                const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
+                if (res.errors) {
+                    const messages = Object.values(res.errors).flat().join('<br>');
+                    toastr.error(messages);
+                    return;
+                } else if (res.msg) {
+                    toastr.error(res.msg);
+                    return;
+                }
+            } catch (err) {
+                console.error("Error parsing response:", err);
+            }
+            toastr.error(msg);
+        }
 
-    </script>
+        function resetSubcategoryForm() {
+            $form[0].reset();
+            $('.error').text('');
+            $('.is-invalid').removeClass('is-invalid');
+            $('#subcategory_id').val('');
+        }
+
+        // Reset form when modal closes
+        $('#add-subcategory').on('hidden.bs.modal', function () {
+            resetSubcategoryForm();
+            $('#modalTitle').text('Add Sub Category');
+            $('#categorySubmitButton').text('Add Sub Category');
+            $form.attr('action', storeUrl).attr('method', 'POST');
+        });
+
+        // Expose globally
+        window.editSubCategory = function (sub_category_id) {
+            $.post(editUrl, { sub_category_id })
+                .done(function (response) {
+                    if (response.status === true) {
+                        const sub = response.data;
+
+                        resetSubcategoryForm();
+                        $('#name').val(sub.subcategory_name);
+                        $('#category_id').val(sub.category_id);
+                        $('#subcategory_id').val(sub.subcategory_id); // make sure this field exists
+
+                        $('#modalTitle').text('Edit Sub Category');
+                        $('#categorySubmitButton').text('Update Sub Category');
+                        $form.attr('action', updateUrl).attr('method', 'POST');
+                        $('#add-subcategory').modal('show');
+                    } else {
+                        toastr.error(response.message || "Unable to load sub category.");
+                    }
+                })
+                .fail(ajaxError);
+        };
+    });
+</script>
 @endpush
+

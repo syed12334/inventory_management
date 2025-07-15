@@ -103,175 +103,107 @@
 @endsection
 
 @push('script')
-    <script>
+<script>
+$.ajaxSetup({
+    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+});
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
+$(function () {
 
-        $(document).ready(function () {
-            $("#categoryform").validate({
-                rules: {
-                    name: {
-                        required: true,
-                        minlength: 3
+    const $form           = $('#categoryform');
+    const listUrl         = "{{ route('category.index') }}";
+    const storeUrl        = "{{ route('category.storeCategory') }}";
+    const editUrl         = "{{ route('category.editCategory') }}";
+    const updateUrl       = "{{ route('category.updateCategory') }}";
+
+    /* ---------- jQuery‑Validate ---------- */
+    $form.validate({
+        rules:    { name: { required: true, minlength: 3 } },
+        messages: { name: { required: 'Please enter a category',
+                            minlength: 'Your category name must consist of at least 3 characters' } },
+
+        submitHandler: function (form) {
+            const fd = new FormData(form);
+
+            $.ajax({
+                url:  form.action,
+                type: form.method,
+                data: fd,
+                processData: false,
+                contentType: false,
+
+                success(res) {
+                    if (res.status === true) {
+                        toastr.success(res.msg || 'Saved');
+                        $('#add-category').modal('hide');
+                        refreshList();
+                    } else if (res.status === 422) {
+                        $.each(res.errors, (k, v) => {
+                            $('#error_' + k).text(v[0]);
+                            $('#' + k).addClass('error');
+                        });
+                    } else {
+                        toastr.error(res.msg || 'Something went wrong');
                     }
                 },
-                messages: {
-                    name: {
-                        required: "Please enter a category",
-                        minlength: "Your category name must consist of at least 3 characters"
-                    }
-                },
-                submitHandler: function (form) {
-                    let formData = new FormData(form);
-
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (res) {
-                            if (res.status === true) {
-                                toastr.success(res.msg);
-                                $('#add-category').modal('hide');
-                               
-
-                                $.ajax({
-                                    url: "{{ route('category.index') }}",
-                                    type: 'GET',
-                                    success: function (res) {
-                                        $('#categoryListtable').html(res.html);
-                                    },
-                                    error: function () {
-                                        toastr.error('Failed to refresh category list.');
-                                    }
-                                });
-                            } else if (res.status === 422) {
-                                $.each(res.errors, function (key, val) {
-                                    $('#error_' + key).text(val[0]);
-                                    $("#" + key).addClass('error');
-                                });
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            let msg = "Something went wrong!";
-                            if (jqXHR.status === 403) {
-                                msg = "Token error! Please try again.";
-                            } else {
-                                msg = textStatus + " - " + errorThrown;
-                            }
-                            toastr.error(msg);
-                        }
-                    }); 
-
-                    return false;
-                    
-                }
+                error: ajaxFail
             });
-        });
 
-    const editCategoryUrl = "{{ route('category.editCategory') }}";
-    const updateCategoryUrl = "{{ route('category.updateCategory') }}";
+            return false;   // prevent normal submit
+        }
+    });
 
-   function editCategory(category_id) {
-    $.ajax({
-        url: editCategoryUrl,
-        type: "POST",
-        dataType: "json",
-        data: {
-            category_id: category_id,
-            _token: "{{ csrf_token() }}"
-        },
-        success: function(response) {
-            if (response.status === true) {
-                const category = response.data;
-
-                $("#categoryform")[0].reset();
-                $("#name").val(category.title);
-                $("#category_id").val(category.category_id);
-                $("#modalTitle").text('Edit Category');
-                $("#add-category").modal('show');
-                $("#categorySubmitButton").text('Edit Category');
-                $("#categoryform").attr("action", updateCategoryUrl);
-
-                $("#categoryform").off("submit").on("submit", function(e) {
-                    e.preventDefault();
-
-                    const formData = new FormData(this);
-
-                    $.ajax({
-                        url: updateCategoryUrl,
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(res) {
-                            if (res.status) {
-                                $('#add-category').modal('hide');
-                                toastr.success(res.msg || "Category updated successfully.");
-                                $.ajax({
-                                    url: "{{ route('category.index') }}",
-                                    type: 'GET',
-                                    success: function(listRes) {
-                                        $('#usersListtable').html(listRes.html);
-                                    },
-                                    error: function() {
-                                        toastr.error('Failed to refresh category list.');
-                                    }
-                                });
-                            } else {
-                                toastr.error(res.msg || "Update failed.");
-                            }
-                        },
-                        error: function(jqXHR) {
-                            let msg = "Something went wrong!";
-                            try {
-                                const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
-                                if (res.errors) {
-                                    const messages = Object.values(res.errors).flat().join('<br>');
-                                    toastr.error(messages);
-                                    return;
-                                } else if (res.msg) {
-                                    toastr.error(res.msg);
-                                    return;
-                                }
-                            } catch (err) {
-                                console.error("Error parsing response:", err);
-                            }
-                            toastr.error(msg);
-                        }
-                    });
-                });
-
-            } else {
-                alert(response.message || "Unable to load category.");
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-                let msg = "Something went wrong!";
-                try {
-                    const res = jqXHR.responseJSON || JSON.parse(jqXHR.responseText);
-                    if (res.errors) {
-                        const messages = Object.values(res.errors).flat().join('<br>');
-                        toastr.error(messages);
-                        return;
-                    } else if (res.msg) {
-                        toastr.error(res.msg);
-                        return;
-                    }
-                } catch (err) {
-                    console.error("Error parsing response:", err);
-                }
-                toastr.error(msg);
-            }
-        });
+    /* ---------- List refresh helper ---------- */
+    function refreshList() {
+        $.get(listUrl)
+         .done(res => $('#categoryListtable').html(res.html))
+         .fail(() => toastr.error('Failed to refresh category list.'));
     }
 
+    /* ---------- Global AJAX error handler ---------- */
+    function ajaxFail(jqXHR, textStatus, errorThrown) {
+        let msg = 'Something went wrong!';
+        if (jqXHR.status === 403) msg = 'Token error! Please try again.';
+        else                      msg = textStatus + ' - ' + errorThrown;
+        toastr.error(msg);
+    }
 
+    /* ---------- Clear form & errors helper ---------- */
+    function clearForm() {
+        $form[0].reset();
+        $('.error').text('');
+        $('.is-invalid').removeClass('is-invalid');
+    }
 
-    </script>
+    /* ---------- Edit Category (exposed globally) ---------- */
+    window.editCategory = function (category_id) {
+        $.post(editUrl, { category_id })
+         .done(resp => {
+             if (resp.status) {
+                 const c = resp.data;
+
+                 clearForm();
+                 $('#name').val(c.title);                 // << proper key
+                 $('#category_id').val(c.category_id);
+                 $('#modalTitle').text('Edit Category');
+                 $('#categorySubmitButton').text('Update Category');
+                 $form.attr({ action: updateUrl, method: 'POST' });
+                 $('#add-category').modal('show');
+             } else {
+                 toastr.error(resp.message || 'Unable to load category.');
+             }
+         })
+         .fail(ajaxFail);
+    };
+
+    /* ---------- Modal reset on hide ---------- */
+    $('#add-category').on('hidden.bs.modal', () => {
+        clearForm();
+        $('#modalTitle').text('Add Category');
+        $('#categorySubmitButton').text('Add Category');
+        $form.attr({ action: storeUrl, method: 'POST' });
+    });
+});
+</script>
 @endpush
+
