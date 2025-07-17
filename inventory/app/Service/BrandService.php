@@ -157,10 +157,10 @@ class BrandService
     protected function prepareBrandData(array $data, string $type, $existing = null)
     {
         return [
-            'title'     => $data['title'],
-            'brand_img' => $data['brand_img'] ?? ($existing->brand_img ?? null),
-            'user_id'   => Auth::id(),
-            'status'    => $data['status'] ?? 0,
+            'title'         => $data['title'],
+            'brand_img'     => $data['brand_img'] ?? ($existing->brand_img ?? null),
+            'status'        => $data['status'] ?? 1,
+            'updated_by'    => Auth::id() ?? null,
         ];
     }
 }

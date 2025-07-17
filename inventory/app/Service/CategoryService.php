@@ -213,8 +213,8 @@ class CategoryService
        return [
             'title' => $request['name'],
             'slug' => $slug,
-            'user_id' => Auth::user()->id,
             'status' => $request['status'] ?? 1,
+            'updated_by' => Auth::user()->id ?? null,
         ];
     }
    
@@ -230,11 +230,11 @@ class CategoryService
         }
 
         return [
-            'user_id' => Auth::user()->id,
             'category_id' => $request['category_id'],
             'subcategory_name' => $request['name'],
             'slug' => $slug,
             'status' => $request['status'] ?? 1,
+            'updated_by' => Auth::user()->id ?? null,
         ];
     }
 
