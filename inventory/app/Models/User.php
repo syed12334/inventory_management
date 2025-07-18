@@ -2,40 +2,51 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Post;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Str;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
-        protected $guard_name = 'web';
+
+    protected $guard_name = 'web';
 
     protected $fillable = [
-        'id',
+        'user_uuid',
         'name',
         'email',
+        'mobile_number',
+        'email_verified_at',
         'password',
+        'warehouse_store_id',
+        'jsontext',
         'profile_image',
         'status',
-        'mobile_number',
-        'jsontext',
-        'warehouse_store_id',
+        'remember_token',
     ];
+
+    /**
+     * Automatically generate UUID on creation.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($user) {
+            if (empty($user->user_uuid)) {
+                $user->user_uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-   
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 }

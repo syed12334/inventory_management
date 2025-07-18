@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('category_logs', function (Blueprint $table) {
             $table->id();
-            $table->uuid('post_uuid')->unique();
+            $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('post_title');
-            $table->text('post_description');
+            $table->integer('from_status')->comment('1-Active, 0-Inactive, 2-Deleted');
+            $table->tinyInteger('type')->comment('1-Inserted, 2-Updated, 3-Deleted, 4-Status Change');
             $table->timestamps();
+
+            // Optional: Add foreign key constraints
+            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
-
-       
     }
 
     /**
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('category_logs');
     }
 };
