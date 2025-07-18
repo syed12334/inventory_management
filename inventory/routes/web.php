@@ -13,6 +13,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\AuthMiddleware;
 
@@ -87,6 +88,13 @@ Route::middleware([AuthMiddleware::class])->group(function () {
         Route::post('/store', [UnitController::class, 'store'])->name('store');
         Route::post('/update', [UnitController::class, 'update'])->name('update');
     });
+
+    Route::prefix('barcode')->name('barcode.')->group(function () {
+        Route::get('/generate/{id}', [BarcodeController::class, 'generate'])->name('generate');
+        Route::get('/scan', [BarcodeController::class, 'scanPage'])->name('scan.page');
+        Route::post('/scan', [BarcodeController::class, 'processScan'])->name('scan.process');
+    });
+
 
 
     Route::prefix('store')->name('store.')->group(function () {

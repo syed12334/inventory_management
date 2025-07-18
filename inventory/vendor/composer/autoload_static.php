@@ -521,20 +521,41 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'M' => 
+        array (
+            'Milon\\Barcode' => 
+            array (
+                0 => __DIR__ . '/..' . '/milon/barcode/src',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'App\\Events\\UserEvent' => __DIR__ . '/../..' . '/app/Events/UserEvent.php',
+        'App\\Helpers\\Helpers' => __DIR__ . '/../..' . '/app/Helpers/Helpers.php',
+        'App\\Http\\Controllers\\BrandController' => __DIR__ . '/../..' . '/app/Http/Controllers/BrandController.php',
         'App\\Http\\Controllers\\CategoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/CategoryController.php',
+        'App\\Http\\Controllers\\ColorController' => __DIR__ . '/../..' . '/app/Http/Controllers/ColorController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/DashboardController.php',
+        'App\\Http\\Controllers\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/LoginController.php',
         'App\\Http\\Controllers\\RoleController' => __DIR__ . '/../..' . '/app/Http/Controllers/RoleController.php',
-        'App\\Http\\Controllers\\SubcategoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/SubcategoryController.php',
+        'App\\Http\\Controllers\\SizeController' => __DIR__ . '/../..' . '/app/Http/Controllers/SizeController.php',
+        'App\\Http\\Controllers\\StoreController' => __DIR__ . '/../..' . '/app/Http/Controllers/StoreController.php',
+        'App\\Http\\Controllers\\SubCategoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/SubCategoryController.php',
+        'App\\Http\\Controllers\\UnitController' => __DIR__ . '/../..' . '/app/Http/Controllers/UnitController.php',
         'App\\Http\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserController.php',
+        'App\\Http\\Controllers\\WarehouseController' => __DIR__ . '/../..' . '/app/Http/Controllers/WarehouseController.php',
+        'App\\Http\\Middleware\\AuthMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/AuthMiddleware.php',
         'App\\Listeners\\UserListener' => __DIR__ . '/../..' . '/app/Listeners/UserListener.php',
-        'App\\Models\\Brands' => __DIR__ . '/../..' . '/app/Models/Brands.php',
-        'App\\Models\\Categories' => __DIR__ . '/../..' . '/app/Models/Categories.php',
-        'App\\Models\\Colors' => __DIR__ . '/../..' . '/app/Models/Colors.php',
+        'App\\Models\\Brand' => __DIR__ . '/../..' . '/app/Models/Brand.php',
+        'App\\Models\\Category' => __DIR__ . '/../..' . '/app/Models/Category.php',
+        'App\\Models\\Color' => __DIR__ . '/../..' . '/app/Models/Color.php',
         'App\\Models\\Post' => __DIR__ . '/../..' . '/app/Models/Post.php',
-        'App\\Models\\Sizes' => __DIR__ . '/../..' . '/app/Models/Sizes.php',
-        'App\\Models\\Subcategories' => __DIR__ . '/../..' . '/app/Models/Subcategories.php',
+        'App\\Models\\Size' => __DIR__ . '/../..' . '/app/Models/Size.php',
+        'App\\Models\\SubCategory' => __DIR__ . '/../..' . '/app/Models/SubCategory.php',
+        'App\\Models\\Unit' => __DIR__ . '/../..' . '/app/Models/Unit.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\UserLogs' => __DIR__ . '/../..' . '/app/Models/UserLogs.php',
         'App\\Policies\\BrandPolicy' => __DIR__ . '/../..' . '/app/Policies/BrandPolicy.php',
@@ -543,13 +564,24 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'App\\Policies\\StockPolicy' => __DIR__ . '/../..' . '/app/Policies/StockPolicy.php',
         'App\\Policies\\SubcategroyPolicy' => __DIR__ . '/../..' . '/app/Policies/SubcategroyPolicy.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
+        'App\\Repository\\BrandRepository' => __DIR__ . '/../..' . '/app/Repository/BrandRepository.php',
         'App\\Repository\\CategoryRepository' => __DIR__ . '/../..' . '/app/Repository/CategoryRepository.php',
+        'App\\Repository\\ColorRepository' => __DIR__ . '/../..' . '/app/Repository/ColorRepository.php',
+        'App\\Repository\\LoginRepository' => __DIR__ . '/../..' . '/app/Repository/LoginRepository.php',
         'App\\Repository\\RoleRepository' => __DIR__ . '/../..' . '/app/Repository/RoleRepository.php',
+        'App\\Repository\\SizeRepository' => __DIR__ . '/../..' . '/app/Repository/SizeRepository.php',
+        'App\\Repository\\UnitRepository' => __DIR__ . '/../..' . '/app/Repository/UnitRepository.php',
         'App\\Repository\\UserRepository' => __DIR__ . '/../..' . '/app/Repository/UserRepository.php',
         'App\\Rules\\UserRule' => __DIR__ . '/../..' . '/app/Rules/UserRule.php',
+        'App\\Service\\BrandService' => __DIR__ . '/../..' . '/app/Service/BrandService.php',
         'App\\Service\\CategoryService' => __DIR__ . '/../..' . '/app/Service/CategoryService.php',
+        'App\\Service\\ColorService' => __DIR__ . '/../..' . '/app/Service/ColorService.php',
+        'App\\Service\\LoginService' => __DIR__ . '/../..' . '/app/Service/LoginService.php',
         'App\\Service\\RoleService' => __DIR__ . '/../..' . '/app/Service/RoleService.php',
+        'App\\Service\\SizeService' => __DIR__ . '/../..' . '/app/Service/SizeService.php',
+        'App\\Service\\UnitService' => __DIR__ . '/../..' . '/app/Service/UnitService.php',
         'App\\Service\\UserService' => __DIR__ . '/../..' . '/app/Service/UserService.php',
+        'App\\Service\\WarehouseService' => __DIR__ . '/../..' . '/app/Service/WarehouseService.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
         'Brick\\Math\\BigInteger' => __DIR__ . '/..' . '/brick/math/src/BigInteger.php',
@@ -3434,6 +3466,20 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'League\\Uri\\UriTemplate\\TemplateCanNotBeExpanded' => __DIR__ . '/..' . '/league/uri/UriTemplate/TemplateCanNotBeExpanded.php',
         'League\\Uri\\UriTemplate\\VarSpecifier' => __DIR__ . '/..' . '/league/uri/UriTemplate/VarSpecifier.php',
         'League\\Uri\\UriTemplate\\VariableBag' => __DIR__ . '/..' . '/league/uri/UriTemplate/VariableBag.php',
+        'Milon\\Barcode\\BarcodeServiceProvider' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/BarcodeServiceProvider.php',
+        'Milon\\Barcode\\DNS1D' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/DNS1D.php',
+        'Milon\\Barcode\\DNS2D' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/DNS2D.php',
+        'Milon\\Barcode\\Datamatrix' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/Datamatrix.php',
+        'Milon\\Barcode\\Facades\\DNS1DFacade' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/Facades/DNS1DFacade.php',
+        'Milon\\Barcode\\Facades\\DNS2DFacade' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/Facades/DNS2DFacade.php',
+        'Milon\\Barcode\\GS1_128\\AIData' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/GS1_128/AIData.php',
+        'Milon\\Barcode\\GS1_128\\GS1128' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/GS1_128/GS1128.php',
+        'Milon\\Barcode\\GS1_128\\Section' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/GS1_128/Section.php',
+        'Milon\\Barcode\\GS1_128\\SectionSlicer' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/GS1_128/SectionSlicer.php',
+        'Milon\\Barcode\\GS1_128\\Subsets' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/GS1_128/Subsets.php',
+        'Milon\\Barcode\\PDF417' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/PDF417.php',
+        'Milon\\Barcode\\QRcode' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/QRcode.php',
+        'Milon\\Barcode\\WrongCheckDigitException' => __DIR__ . '/..' . '/milon/barcode/src/Milon/Barcode/WrongCheckDigitException.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegration' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegration.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegrationAssertPostConditions' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegrationAssertPostConditions.php',
         'Mockery\\Adapter\\Phpunit\\MockeryTestCase' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryTestCase.php',
@@ -6728,6 +6774,7 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit88970a0117c062eed55fa8728fc43833::$classMap;
 
         }, null, ClassLoader::class);
