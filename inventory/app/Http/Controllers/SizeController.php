@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Service\SizeService;
+use App\Services\SizeService;
 use Illuminate\Http\Request;
 
 class SizeController extends Controller

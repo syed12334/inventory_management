@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Service;
-use App\Repository\RoleRepository;
+namespace App\Services;
+use App\Repositories\RoleRepositories;
 use Validator;
 class RoleService
 {

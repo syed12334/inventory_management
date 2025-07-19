@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Repository\ColorRepository;
+use App\Repositories\ColorRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;

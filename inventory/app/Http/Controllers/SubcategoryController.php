@@ -2,7 +2,8 @@
 namespace App\Http\Controllers;
 use App\Models\Categories;
 use Illuminate\Http\Request;
-use App\Service\CategoryService;
+use App\Services\CategoryService;
+
 class SubCategoryController extends Controller
 {
     public $categoryService;

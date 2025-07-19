@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 use Hash;
 use Validator;
-use App\Repository\UserRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Log;
 
 class UserService

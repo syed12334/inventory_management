@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
-use App\Repository\UnitRepository;
+use App\Repositories\UnitRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;

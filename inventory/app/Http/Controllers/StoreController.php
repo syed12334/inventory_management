@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 use App\Service\UserService;
 
-use App\Service\WarehouseService;
+use App\Services\WarehouseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 

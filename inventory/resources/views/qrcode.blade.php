@@ -1,0 +1,1 @@
+<h2>QR Code Saved</h2><img src='{{$publicUrl}}' alt='QR Code'><br><a href='{{$publicUrl}}' download>Download QR Code</a>";

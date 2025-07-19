@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Service\LoginService;
+use App\Services\LoginService;
 class LoginController extends Controller
 {
     protected $login;

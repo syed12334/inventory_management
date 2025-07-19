@@ -1,6 +1,6 @@
 <?php
-namespace App\Service;
-use App\Repository\LoginRepository;
+namespace App\Services;
+use App\Repositories\LoginRepository;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 class LoginService

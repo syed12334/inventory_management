@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-use App\Service\UserService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 

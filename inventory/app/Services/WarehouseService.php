@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 use Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Repository\UserRepository;
+use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\Log;
 
 class WarehouseService
